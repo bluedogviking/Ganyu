@@ -1,0 +1,29 @@
+{
+  "name": "ganyu",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A custom Discord bot made for Ganyu Mains server.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "7.x"
+  },
+  "keywords": [],
+  "author": "Zyla",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/builders": "^0.7.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "discord-api-types": "^0.26.1",
+    "discord.js": "^13.5.0",
+    "dotenv": "^10.0.0",
+    "file-ez": "^0.2.2",
+    "mongoose": "^6.1.5",
+    "ms": "^2.1.3",
+    "pretty-ms": "^7.0.1",
+    "zaq": "^2.1.5"
+  }
+}
