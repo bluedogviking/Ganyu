@@ -9,7 +9,7 @@ export default {
     const isEmbed = interaction.options.getBoolean('embed')
     const response = interaction.options.getString('response')
 
-    if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.guidingGoats, Roles.creator].includes(r.id)))
+    if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.adminRole].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
 
     if (isEmbed) {
