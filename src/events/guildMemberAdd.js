@@ -9,8 +9,6 @@ export default {
     const welcomeChannel = await member.guild.channels.fetch('808150446689615903', { cache: true }).catch(() => {})
 
     welcomeChannel.send({
-      content:
-        `Welcome to the Golden House, ${member}! Check out <#887126756354580480> to get access to the rest of the server!`,
       embeds: [
         new MessageEmbed({
           color: 'BLUE',
