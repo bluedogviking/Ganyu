@@ -16,7 +16,7 @@ export default {
           color: 'BLUE',
           thumbnail: { url: member.user.displayAvatarURL({ dynamic: true }) },
           title: `Welcome to ${member.guild.name}`,
-          description: `**Welcome to ${member.guild.name}, ${member.user.tag ?? member}!**\nMake sure to read <#926212945871003678>`,
+          description: `**Welcome to ${member.guild.name}, ${member.user.tag ?? member}!**\n**Make sure to read <#926212945871003678>.**`,
           image: {
             url: 'https://cdn.discordapp.com/attachments/805893251042902047/808827618094350336/GanyuBanner20FPS.gif',
           },
