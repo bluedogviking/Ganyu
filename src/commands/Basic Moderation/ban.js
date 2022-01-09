@@ -9,7 +9,7 @@ export default {
 
   data: new SlashCommandBuilder()
     .setName('ban')
-    .setDescription('Bans a user from the guild.')
+    .setDescription('Bans a user from the server.')
     .addSubcommand(id_ban => id_ban
       .setName('by-id')
       .setDescription('Bans a user from the server by their id.')
