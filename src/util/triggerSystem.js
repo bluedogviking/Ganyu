@@ -9,7 +9,7 @@ export default {
     const isEmbed = interaction.options.getBoolean('embed')
     const response = interaction.options.getString('response')
 
-    if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.adminRole].includes(r.id)))
+    if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole,Roles.adminRole].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
 
     if (isEmbed) {
@@ -51,7 +51,7 @@ export default {
   delete: async function (interaction) {
     const trigger = interaction.options.getString('trigger')
 
-    if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.guidingGoats, Roles.creator].includes(r.id)))
+    if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole,Roles.adminRole].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
 
     Triggers.findOne({ trigger }, {}, {}, (err, data) => {
@@ -67,7 +67,7 @@ export default {
   view: async function (interaction) {
     const trigger = interaction.options.getString('trigger')
 
-    if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.guidingGoats, Roles.creator].includes(r.id)))
+    if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole,Roles.adminRole].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
 
     Triggers.findOne({ trigger }, {}, {}, async (err, data) => {
