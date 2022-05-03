@@ -194,4 +194,26 @@ export default {
       data.delete()
     })
   },
+
+  /** @param {CommandInteraction} interaction */
+  help: async function (interaction) {
+    await interaction.deferReply({ ephemeral: false })
+
+    await interaction.editReply({
+      embeds: [
+        new MessageEmbed({
+          color: 'RANDOM',
+          title: 'How to use Modmail',
+          description: 'There are two functional commands in modmail, one of which only staff can use, other one is what you will be using.',
+          fields: [
+            {
+              name: '/modmail request',
+              value: 'Request command is used to create a modmail ticket by requesting it from staff with a reason, when you enter the command with a reason, staff team will be pinged and they will either accept or reject the request.\nIf accepted, a new channel will be created and you will be pinged in there...\n\n**I.E.**\n/modmail request __reason:__ role request',
+              inline: false
+            }
+          ]
+        })
+      ]
+    })
+  }
 }

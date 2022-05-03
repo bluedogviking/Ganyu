@@ -26,7 +26,10 @@ export default {
         .setRequired(true))
       .addStringOption(reason => reason
         .setName('reason')
-        .setDescription('Reason for closing the ticket'))),
+        .setDescription('Reason for closing the ticket')))
+    .addSubcommand(help => help
+      .setName('help')
+      .setDescription('Learn how to use modmail.')),
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
@@ -38,6 +41,9 @@ export default {
         break
       case 'delete':
         await ModmailSystem.del(interaction)
+        break
+      case 'help':
+        await ModmailSystem.help(interaction)
         break
     }
   },
