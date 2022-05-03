@@ -1,10 +1,6 @@
 import Warns from '../database/models/warns.js'
-import { CommandInteraction, GuildMember, MessageEmbed } from 'discord.js'
+import { CommandInteraction, MessageEmbed } from 'discord.js'
 import Roles from '../constants/roles.js'
-import AutoPunishment from '../database/models/autoPunishmentSettings.js'
-import Mutes from '../database/models/mutes.js'
-import ms from 'ms'
-import prettyMilliseconds from 'pretty-ms'
 
 export default {
   /** @param {CommandInteraction} interaction */
@@ -65,7 +61,6 @@ export default {
           }),
         ],
       }).catch(() => {})
-      await this.checkForPunishment(interaction, member)
     })
     await interaction.editReply(`${member.user.tag ?? member} has been warned.`)
   },
@@ -176,95 +171,6 @@ export default {
             timestamp: new Date(),
           }),
         ],
-      })
-    })
-  },
-
-  /** @param {CommandInteraction} interaction
-   *  @param {GuildMember} member */
-  checkForPunishment: async function (interaction, member) {
-    Warns.findOne({ memberID: member.id }, {}, {}, async (err, wdata) => {
-      if (err) throw err
-      if (!wdata) return
-
-      AutoPunishment.findOne({ warns: wdata.warnings.size }, {}, {}, async (err, adata) => {
-        if (err) throw err
-        if (!adata) return
-
-        switch (adata.punishment) {
-          case 'ban':
-            await member.send({
-              embeds: [
-                new MessageEmbed({
-                  color: 'RED',
-                  title: `You have been banned!`,
-                  description: `You have been banned from ${interaction.guild.name} due to the amount of warnings.\nSend a ban appeal if you think you're wrongfully banned.\nhttps://bit.ly/EMBanAppealForm`,
-                  timestamp: new Date(),
-                }),
-              ],
-            }).catch(() => {})
-            await interaction.guild.members.ban(member, { days: 2, reason: 'Auto Ban' })
-            await interaction.followUp(`${member.user.tag} has been banned due to the amount of warnings`)
-            wdata.delete()
-            break
-          case 'kick':
-            await member.send({
-              embeds: [
-                new MessageEmbed({
-                  color: 'RED',
-                  title: `You have been kicked!`,
-                  description: `You have been kicked from ${interaction.guild.name} due to the amount of warnings.`,
-                  timestamp: new Date(),
-                }),
-              ],
-            }).catch(() => {})
-            await interaction.guild.members.kick(member, 'Auto Kick')
-            await interaction.followUp(`${member.user.tag} has been kicked due to the amount of warnings`)
-            break
-          case 'softban':
-            await member.send({
-              embeds: [
-                new MessageEmbed({
-                  color: 'RED',
-                  title: `You have been softbanned!`,
-                  description: `You have been softbanned from ${interaction.guild.name} due to the amount of warnings.\nJoin back only if you'll follow the rules.\nhttps://discord.gg/eula`,
-                  timestamp: new Date(),
-                }),
-              ],
-            }).catch(() => {})
-            await interaction.guild.members.ban(member, { reason: 'Auto Softban' })
-            await interaction.guild.members.unban(member, 'Auto Softban')
-            await interaction.followUp(`${member.user.tag} has been softbanned due to the amount of warnings`)
-            wdata.delete()
-            break
-          case 'mute':
-            Mutes.findOne({ memberID: member.id }, {}, {}, async (err, mdata) => {
-              if (err) throw err
-              if (!mdata) {
-                await Mutes.create({
-                  memberID: member.id,
-                  unmuteAt: Date.now() + ms(adata.duration),
-                })
-              } else {
-                mdata.unmuteAt = Date.now() + ms(adata.duration)
-              }
-              await member.roles.add(Roles.muteRole)
-              await member.send({
-                embeds: [
-                  new MessageEmbed({
-                    color: 'RED',
-                    title: `You have been muted!`,
-                    description: `You have been muted in ${interaction.guild.name} for ${prettyMilliseconds(ms(adata.duration),
-                      { verbose: true },
-                    )} due to the amount of warnings.\n`,
-                    timestamp: new Date(),
-                  }),
-                ],
-              }).catch(() => {})
-              await interaction.followUp(`${member.user.tag} has been muted due to the amount of warnings`)
-            })
-            break
-        }
       })
     })
   },
