@@ -4,7 +4,10 @@ import loader from './util/loader.js'
 
 config()
 
-export const Ganyu = new Client({ intents: 32767 })
+export const Ganyu = new Client({
+  intents: 32767,
+  presence: { status: 'dnd', activities: [{ type: 'LISTENING', name: '/modmail request' }] }
+})
 Ganyu.commands = new Collection()
 
 await loader.loadCommands()
