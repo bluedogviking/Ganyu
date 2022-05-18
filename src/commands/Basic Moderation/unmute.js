@@ -30,11 +30,11 @@ export default {
 
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
     let reason = interaction.options.getString('reason') ?? `No reason provided by ${interaction.member.user.tag}`
 
     const muteRole = await interaction.guild.roles.fetch(Roles.muteRole, { cache: false })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the mute role.\nError message: ${e.message}`)})
 
     if (user === interaction.member.user.id)
       return interaction.editReply(`Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)

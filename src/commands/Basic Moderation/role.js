@@ -41,10 +41,10 @@ export default {
     await interaction.deferReply()
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {interaction.editReply('Couldn\'t find the member.')})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
     const roleID = interaction.options.getRole('role').id
     const role = await interaction.guild.roles.fetch(roleID)
-      .catch(() => {interaction.editReply('Couldn\'t find the role.')})
+      .catch((e) => {interaction.editReply(`There was an error finding the role.\nError message: ${e.message}`)})
 
     if (interaction.member.roles.highest <= role)
       return await interaction.editReply('<a:ganyuNo:876129975454011512>')

@@ -33,7 +33,7 @@ export default {
     await interaction.deferReply()
     const user = interaction.options.getString('id', true)
     const isMember = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
     let days = interaction.options.getNumber('days', false)
     days > 7 ? days = 7 : days
     const reason = interaction.options.getString(

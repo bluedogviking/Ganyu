@@ -7,7 +7,7 @@ export default {
   add: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
     const reason = interaction.options.getString('reason')
 
     if (!interaction.member.roles.cache.some(r => [
@@ -69,7 +69,7 @@ export default {
   remove: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
     const caseNum = interaction.options.getNumber('case-number')
 
     if (!interaction.member.roles.cache.some(r => [
@@ -103,7 +103,7 @@ export default {
   clear: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
 
     if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.modRole, Roles.creator].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
@@ -140,12 +140,12 @@ export default {
   view: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch(() => {})
+      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
 
     if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.modRole, Roles.creator].includes(r.id)))
       return interaction.editReply(`Insufficient permissions.`)
 
-    Warns.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
+    Warns.findOne({ memberID: user }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
         return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)

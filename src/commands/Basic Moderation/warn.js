@@ -34,7 +34,7 @@ export default {
         .setRequired(true)))
     .addSubcommand(clear => clear
       .setName('clear')
-      .setDescription('Clear removed warnings of a member')
+      .setDescription('Clear all warns of a member')
       .addUserOption(member => member
         .setName('member')
         .setDescription('Member to clear the warnings of')
