@@ -7,4 +7,7 @@ export default {
   'adminRole': '786025543124123698',
   'modRole': '786025543085981705',
   'guidingGoats': '802560679767965717',
+  'nsfwModerator': '971545579773624360',
+  'nsfwBanned': '976604578986479656',
+  'nsfwRole': '913284186310324274'
 }
