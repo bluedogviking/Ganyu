@@ -82,12 +82,12 @@ export default {
     NSFWWarns.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)
+        return interaction.editReply(`${member.user.tag ?? member} has no NSFW warnings.`)
       else if (!data.warnings.has(`${caseNum}`))
-        return interaction.editReply(`I couldn't find the warn with the given case number.`)
+        return interaction.editReply(`I couldn't find the NSFW warn with the given case number.`)
       data.warnings.delete(`${caseNum}`)
       data.save()
-      await interaction.editReply(`Removed the warn with the case number ${caseNum} from ${member.user.tag ?? member}.`)
+      await interaction.editReply(`Removed the NSFW warn with the case number ${caseNum} from ${member.user.tag ?? member}.`)
     })
   },
 
@@ -112,7 +112,7 @@ export default {
     NSFWWarns.findOne({ memberID: member.id }, {}, {}, (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)
+        return interaction.editReply(`${member.user.tag ?? member} has no NSFW warnings.`)
 
       data.delete()
       member.send({

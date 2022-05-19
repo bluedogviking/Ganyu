@@ -88,15 +88,16 @@ export default {
 
     if (!interaction.member.roles.cache.has(Roles.nsfwModerator) && !interaction.memberPermissions.has('MANAGE_ROLES'))
       return await interaction.editReply('Insufficient permissions.')
-    if (member.id === interaction.member.user.id)
-      return await interaction.editReply(`You can't do that to yourself.`)
-    else if (!member.manageable)
-      return interaction.editReply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
-    else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
     switch (cmd) {
       case 'ban':
+        if (member.id === interaction.member.user.id)
+          return await interaction.editReply(`You can't do that to yourself.`)
+        else if (!member.manageable)
+          return interaction.editReply(`I can't NSFW Ban ${member.user.tag ?? member} due to role hierarchy.`)
+        else if (member.roles.highest.position >= interaction.member.roles.highest.position)
+          return interaction.editReply(`You can't NSFW ban ${member.user.tag ?? member} due to role hierarchy.`)
+
         await member.roles.remove(Roles.nsfwRole)
         await member.roles.add(Roles.nsfwBanned).then(async (member) => {
           await interaction.editReply(`${member.user.tag ?? member} has been banned from the NSFW section.`)
@@ -104,6 +105,13 @@ export default {
         })
         break
       case 'unban':
+        if (member.id === interaction.member.user.id)
+          return await interaction.editReply(`You can't do that to yourself.`)
+        else if (!member.manageable)
+          return interaction.editReply(`I can't unban ${member.user.tag ?? member} from the NSFW Section due to role hierarchy.`)
+        else if (member.roles.highest.position >= interaction.member.roles.highest.position)
+          return interaction.editReply(`You can't unban ${member.user.tag ?? member} from the NSFW Section due to role hierarchy.`)
+
         await member.roles.add(Roles.nsfwRole)
         await member.roles.remove(Roles.nsfwBanned).then(async (member) => {
           await interaction.editReply(`${member.user.tag ?? member} has been unbanned from the NSFW section.`)
