@@ -56,12 +56,12 @@ export default {
 
     switch (comp) {
       case 'freeze':
-        const FREEZEeffectiveAttack = atk * (1 + (cr/100 + 0.55) * cd/100)
+        const FREEZEeffectiveAttack = atk * (1 + (cr / 100 + 0.55) * cd / 100)
         await interaction.editReply(`Your Effective Attack is: ${FREEZEeffectiveAttack}`)
         break
       case 'melt':
         const em = interaction.options.getNumber('elemental-mastery')
-        const MELTeffectiveAttack = atk * (1 + (cr/100 + 0.2) * cd/100) * (1.5 + 2.78 * em * (1400 + em))
+        const MELTeffectiveAttack = atk * (1 + (cr / 100 + 0.2) * cd / 100) * (1.5 + 2.78 * em / (1400 + em))
         await interaction.editReply(`Your Effective Attack is: ${MELTeffectiveAttack}`)
         break
     }
