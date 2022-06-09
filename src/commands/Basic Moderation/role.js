@@ -46,7 +46,7 @@ export default {
     const role = await interaction.guild.roles.fetch(roleID)
       .catch((e) => {interaction.editReply(`There was an error finding the role.\nError message: ${e.message}`)})
 
-    if (interaction.member.roles.highest <= role.position)
+    if (role.position >= interaction.member.roles.highest.position)
       return await interaction.editReply('<a:ganyuNo:876129975454011512>')
 
     if (member.roles.cache.has(role.id)) {
