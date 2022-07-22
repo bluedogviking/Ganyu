@@ -24,7 +24,6 @@ export default {
       if (err) throw err
       if (!data)
         return interaction.editReply(`\`${trigger}\` does not exist`)
-
       if (data.isEmbed) {
         interaction.editReply({ embeds: [new MessageEmbed(JSON.parse(data.json))] })
       } else {
