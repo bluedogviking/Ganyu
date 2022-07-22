@@ -36,7 +36,7 @@ export default {
       ])
 
     await hub.send({
-      content: `ignore this modmail`, embeds: [
+      content: `@here`, embeds: [
         new MessageEmbed({
           color: 'RANDOM',
           author: {
@@ -178,6 +178,7 @@ export default {
         ],
       })
       await channel.delete('ticket deleted')
+      await interaction.reply({ content: 'Frostflake goes woosh and ticket goes boom.' })
       await member.send({
         embeds: [
           new MessageEmbed({
