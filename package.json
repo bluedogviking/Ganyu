@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": "16.x",
-    "npm": "7.x"
+    "npm": "8.x"
   },
   "keywords": [],
   "author": "Zyla",
@@ -18,7 +18,7 @@
     "@discordjs/builders": "^0.7.0",
     "@discordjs/rest": "^0.2.0-canary.0",
     "discord-api-types": "^0.26.1",
-    "discord.js": "^13.5.0",
+    "discord.js": "^13.9.0",
     "dotenv": "^10.0.0",
     "file-ez": "^0.2.2",
     "mongoose": "^6.1.5",
