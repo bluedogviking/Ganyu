@@ -19,8 +19,6 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
-
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
 
@@ -35,7 +33,7 @@ export default {
         })
         data.roles.set('roles', member.roles.cache.map(r => r.id))
         data.save()
-        interaction.editReply(`Sent ${member.user.tag} to hiatus`)
+        interaction.reply(`Sent ${member.user.tag} to hiatus`)
       } else {
         data.delete()
         // ignore @everyone
@@ -43,7 +41,7 @@ export default {
         // @hiatus
         member.roles.remove(Roles.hiatus)
         member.roles.set(roles)
-        interaction.editReply(`Brought ${member.user.tag} back from hiatus`)
+        interaction.reply(`Brought ${member.user.tag} back from hiatus`)
       }
     })
   },

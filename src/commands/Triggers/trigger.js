@@ -22,13 +22,11 @@ export default {
     Triggers.findOne({ trigger }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`\`${trigger}\` does not exist`)
+        return interaction.reply(`\`${trigger}\` does not exist`)
       if (data.isEmbed) {
-        await interaction.deferReply()
-        await interaction.editReply({ embeds: [new MessageEmbed(JSON.parse(data.json))] })
+        await interaction.reply({ embeds: [new MessageEmbed(JSON.parse(data.json))] })
       } else {
-        await interaction.deferReply()
-        await interaction.editReply(data.response)
+        await interaction.reply(data.response)
       }
     })
   },

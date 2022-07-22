@@ -50,19 +50,15 @@ export default {
 
     switch (choice) {
       case 'add':
-        await interaction.deferReply()
         await TriggerSystem.add(interaction)
         break
       case 'delete':
-        await interaction.deferReply()
         await TriggerSystem.delete(interaction)
         break
       case 'view':
-        await interaction.deferReply()
         await TriggerSystem.view(interaction)
         break
       case 'list':
-        await interaction.deferReply()
         await TriggerSystem.list(interaction)
         break
     }

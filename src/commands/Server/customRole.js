@@ -46,7 +46,6 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
     const choice = interaction.options.getSubcommand()
 
     switch (choice) {

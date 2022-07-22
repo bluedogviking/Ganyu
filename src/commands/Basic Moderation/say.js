@@ -24,14 +24,17 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply({ ephemeral: true })
     const ch = interaction.options.getChannel('channel')
     const channel = await interaction.guild.channels.fetch(ch?.id)
-      .catch((e) => {interaction.editReply(`There was an error finding the channel.\nError message: ${e.message}`)})
+      .catch(async (e) => {
+        await interaction.reply({
+          content: `There was an error finding the channel.\nError message: ${e.message}`
+        })
+      })
     const msg = interaction.options.getString('message')
 
     channel.send(msg).then(async () => {
-      await interaction.editReply('Sent!')
+      await interaction.reply({ ephemeral: true, content: 'Message sent!' })
     })
   },
 }

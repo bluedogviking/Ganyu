@@ -30,10 +30,11 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
     const user = interaction.options.getString('id', true)
     const isMember = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+      })
     let days = interaction.options.getNumber('days', false)
     days > 7 ? days = 7 : days
     const reason = interaction.options.getString(
@@ -42,19 +43,19 @@ export default {
     if (!isMember)
       return interaction.guild.members.ban(user, { days, reason })
         .then(banInfo => {
-          interaction.editReply(`Banned ${banInfo.tag ?? banInfo}`)
+          interaction.reply(`Banned ${banInfo.tag ?? banInfo}`)
         })
         .catch((error) => {
-          interaction.editReply('I couldn\'t ban the user, sorry.\n' + error.message)
+          interaction.reply('I couldn\'t ban the user, sorry.\n' + error.message)
         })
 
     if (user === interaction.member.user.id)
-      return interaction.editReply(
+      return interaction.reply(
         `Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)
     else if (!isMember.manageable)
-      return interaction.editReply(`I can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)
+      return interaction.reply(`I can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)
     else if (isMember.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(
+      return interaction.reply(
         `You can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)
 
     await isMember.send({
@@ -71,10 +72,10 @@ export default {
 
     interaction.guild.members.ban(isMember.id, { days, reason })
       .then(banInfo => {
-        interaction.editReply(`Banned ${banInfo.tag ?? banInfo}`)
+        interaction.reply(`Banned ${banInfo.tag ?? banInfo}`)
       })
       .catch((error) => {
-        interaction.editReply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
+        interaction.reply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
       })
   },
 }

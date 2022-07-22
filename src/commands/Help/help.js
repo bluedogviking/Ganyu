@@ -1,7 +1,7 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
-import helper from '../../util/helpSystem.js'
+// import helper from '../../util/helpSystem.js'
 
 export default {
   directory: 'Helper',
@@ -27,13 +27,12 @@ export default {
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
     try {
-      await interaction.deferReply()
-
       const choice = interaction.options.getSubcommand()
 
       switch (choice) {
         case 'menu':
-          await helper.start(interaction)
+          interaction.reply("Disabled due to Discord having issues with itself...")
+          // await helper.start(interaction)
           break
 
         case 'search':
@@ -41,9 +40,9 @@ export default {
           const command = interaction.client['commands'].get(requestedCommand)
 
           if (!command)
-            return interaction.editReply(`I don't have any command named \`${requestedCommand}\`.`)
+            return interaction.reply(`I don't have any command named \`${requestedCommand}\`.`)
 
-          await interaction.editReply({
+          await interaction.reply({
             embeds: [
               new MessageEmbed({
                 author: {

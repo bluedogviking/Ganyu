@@ -32,41 +32,43 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
-
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+      })
     const duration = interaction.options.getString('duration')
     let reason = interaction.options.getString('reason') ?? `No reason provided by ${interaction.member.user.tag}`
 
     const muteRole = await interaction.guild.roles.fetch(Roles.muteRole, { cache: false })
-      .catch((e) => {interaction.editReply(`There was an error finding the mute role.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the mute role.\nError message: ${e.message}`)
+      })
 
     if (user === interaction.member.user.id)
-      return interaction.editReply(
+      return interaction.reply(
         `Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)
     else if (!member.manageable)
-      return interaction.editReply(`I can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`I can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(`You can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`You can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
 
     if (!duration) {
       member.roles.add(muteRole, reason)
         .then(member => {
-          interaction.editReply(`Muted ${member.user.tag ?? member} indefinitely.`)
+          interaction.reply(`Muted ${member.user.tag ?? member} indefinitely.`)
         })
         .catch(error => {
-          interaction.editReply(`There was an error muting the member.\n${error.message}`)
+          interaction.reply(`There was an error muting the member.\n${error.message}`)
         })
     } else {
       member.roles.add(muteRole, reason)
         .then(member => {
-          interaction.editReply(
+          interaction.reply(
             `Muted ${member.user.tag ?? member} for ${prettyMilliseconds(ms(duration), { verbose: true })}.`)
         })
         .catch(error => {
-          interaction.editReply(`There was an error muting the member.\n${error.message}`)
+          interaction.reply(`There was an error muting the member.\n${error.message}`)
         })
     }
 

@@ -48,7 +48,6 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
     const comp = interaction.options.getSubcommand()
     const atk = interaction.options.getNumber('attack')
     const cr = interaction.options.getNumber('crit-rate')
@@ -57,12 +56,12 @@ export default {
     switch (comp) {
       case 'freeze':
         const FREEZEeffectiveAttack = atk * (1 + (cr / 100 + 0.55) * cd / 100)
-        await interaction.editReply(`Your Effective Attack is: ${FREEZEeffectiveAttack}`)
+        await interaction.reply(`Your Effective Attack is: ${FREEZEeffectiveAttack}`)
         break
       case 'melt':
         const em = interaction.options.getNumber('elemental-mastery')
         const MELTeffectiveAttack = atk * (1 + (cr / 100 + 0.2) * cd / 100) * (1.5 + 2.78 * em / (1400 + em))
-        await interaction.editReply(`Your Effective Attack is: ${MELTeffectiveAttack}`)
+        await interaction.reply(`Your Effective Attack is: ${MELTeffectiveAttack}`)
         break
     }
   },

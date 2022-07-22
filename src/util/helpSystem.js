@@ -59,7 +59,7 @@ export default {
         }
       }))
 
-    const interactionMsg = await interaction.editReply({
+    const interactionMsg = await interaction.reply({
       embeds: [embed], components: [getButtons(pageNo)], fetchReply: true,
     })
 

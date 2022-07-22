@@ -10,7 +10,7 @@ export default {
     const response = interaction.options.getString('response')
 
     if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     if (isEmbed) {
       try {
@@ -25,11 +25,11 @@ export default {
               json,
               date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`,
             })
-            await interaction.editReply(`Added \`${trigger}\``)
-          } else await interaction.editReply(`\`${trigger}\` already exists`)
+            await interaction.reply(`Added \`${trigger}\``)
+          } else await interaction.reply(`\`${trigger}\` already exists`)
         })
       } catch (e) {
-        await interaction.editReply(e.message)
+        await interaction.reply(e.message)
       }
     } else
       Triggers.findOne({ trigger }, {}, {}, async (err, data) => {
@@ -42,8 +42,8 @@ export default {
             response: response.replaceAll('\\n', '\n'),
             date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`,
           })
-          await interaction.editReply(`Added \`${trigger}\``)
-        } else await interaction.editReply(`\`${trigger}\` already exists`)
+          await interaction.reply(`Added \`${trigger}\``)
+        } else await interaction.reply(`\`${trigger}\` already exists`)
       })
   },
 
@@ -52,14 +52,14 @@ export default {
     const trigger = interaction.options.getString('trigger')
 
     if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     Triggers.findOne({ trigger }, {}, {}, (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`\`${trigger}\` does not exist`)
+        return interaction.reply(`\`${trigger}\` does not exist`)
       data.delete()
-      interaction.editReply(`Deleted \`${trigger}\``)
+      interaction.reply(`Deleted \`${trigger}\``)
     })
   },
 
@@ -68,16 +68,16 @@ export default {
     const trigger = interaction.options.getString('trigger')
 
     if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     Triggers.findOne({ trigger }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`\`${trigger}\` does not exist`)
+        return interaction.reply(`\`${trigger}\` does not exist`)
 
       const author = await interaction.guild.members.fetch({ user: data.author }).catch(() => {})
       if (data.isEmbed) {
-        await interaction.editReply({
+        await interaction.reply({
           embeds: [
             new MessageEmbed({
               author: {
@@ -95,7 +95,7 @@ export default {
             }), new MessageEmbed(JSON.parse(data.json)),
           ],
         })
-      } else await interaction.editReply({
+      } else await interaction.reply({
         embeds: [
           new MessageEmbed({
             author: {
@@ -117,9 +117,9 @@ export default {
     Triggers.find(async (err, data) => {
       if (err) throw err
       if (data.length === 0)
-        return interaction.editReply(`There are no triggers yet`)
+        return interaction.reply(`There are no triggers yet`)
 
-      await interaction.editReply({
+      await interaction.reply({
         files: [
           new MessageAttachment(Buffer.from(data.map(value => {
             return `# Trigger\n- ${value['trigger']}\n`

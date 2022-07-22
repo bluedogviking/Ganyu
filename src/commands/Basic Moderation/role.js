@@ -38,24 +38,27 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+      })
     const roleID = interaction.options.getRole('role').id
     const role = await interaction.guild.roles.fetch(roleID)
-      .catch((e) => {interaction.editReply(`There was an error finding the role.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the role.\nError message: ${e.message}`)
+      })
 
     if (role.position >= interaction.member.roles.highest.position)
-      return await interaction.editReply('<a:ganyuNo:876129975454011512>')
+      return await interaction.reply('<a:ganyuNo:876129975454011512>')
 
     if (member.roles.cache.has(role.id)) {
       await member.roles.remove(role.id).then(member => {
-        interaction.editReply(`Removed **${role.name}** from **${member.user.tag}**.`)
+        interaction.reply(`Removed **${role.name}** from **${member.user.tag}**.`)
       })
     } else {
       await member.roles.add(role.id).then(member => {
-        interaction.editReply(`Added **${role.name}** to **${member.user.tag}**`)
+        interaction.reply(`Added **${role.name}** to **${member.user.tag}**`)
       })
     }
   },

@@ -7,7 +7,7 @@ export default {
   add: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)})
     const reason = interaction.options.getString('reason')
 
     if (!interaction.member.roles.cache.some(r => [
@@ -15,15 +15,15 @@ export default {
       Roles.modRole,
       Roles.creator,
     ].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     if (user === interaction.member.user.id)
-      return interaction.editReply(
+      return interaction.reply(
         `Why yes, I'd ${interaction.commandName} you myself if I had the chance to but yeah, this is not happening.`)
     else if (!member.manageable)
-      return interaction.editReply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
     Warns.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
       if (err) throw err
@@ -62,14 +62,14 @@ export default {
         ],
       }).catch(() => {})
     })
-    await interaction.editReply(`${member.user.tag ?? member} has been warned.`)
+    await interaction.reply(`${member.user.tag ?? member} has been warned.`)
   },
 
   /** @param {CommandInteraction} interaction */
   remove: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)})
     const caseNum = interaction.options.getNumber('case-number')
 
     if (!interaction.member.roles.cache.some(r => [
@@ -77,25 +77,25 @@ export default {
       Roles.modRole,
       Roles.creator,
     ].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     if (user === interaction.member.user.id)
-      return interaction.editReply(
+      return interaction.reply(
         `No cheating.`)
     else if (!member.manageable)
-      return interaction.editReply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
     Warns.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)
+        return interaction.reply(`${member.user.tag ?? member} has no warnings.`)
       else if (!data.warnings.has(`${caseNum}`))
-        return interaction.editReply(`I couldn't find the warn with the given case number.`)
+        return interaction.reply(`I couldn't find the warn with the given case number.`)
       data.warnings.delete(`${caseNum}`)
       data.save()
-      await interaction.editReply(`Removed the warn with the case number ${caseNum} from ${member.user.tag ?? member}.`)
+      await interaction.reply(`Removed the warn with the case number ${caseNum} from ${member.user.tag ?? member}.`)
     })
   },
 
@@ -103,23 +103,25 @@ export default {
   clear: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+      })
 
     if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.modRole, Roles.creator].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     if (user === interaction.member.user.id)
-      return interaction.editReply(
+      return interaction.reply(
         `No cheating.`)
     else if (!member.manageable)
-      return interaction.editReply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-      return interaction.editReply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+      return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
     Warns.findOne({ memberID: member.id }, {}, {}, (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)
+        return interaction.reply(`${member.user.tag ?? member} has no warnings.`)
 
       data.delete()
       member.send({
@@ -132,7 +134,7 @@ export default {
           }),
         ],
       })
-      interaction.editReply(`Cleared the warn history of ${member.user.tag ?? member}.`)
+      interaction.reply(`Cleared the warn history of ${member.user.tag ?? member}.`)
     })
   },
 
@@ -140,15 +142,17 @@ export default {
   view: async function (interaction) {
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user })
-      .catch((e) => {interaction.editReply(`There was an error finding the member.\nError message: ${e.message}`)})
+      .catch((e) => {
+        interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+      })
 
     if (!interaction.member.roles.cache.some(r => [Roles.adminRole, Roles.modRole, Roles.creator].includes(r.id)))
-      return interaction.editReply(`Insufficient permissions.`)
+      return interaction.reply(`Insufficient permissions.`)
 
     Warns.findOne({ memberID: user }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
-        return interaction.editReply(`${member.user.tag ?? member} has no warnings.`)
+        return interaction.reply(`${member.user.tag ?? member} has no warnings.`)
 
       const fields = []
       for (const value of data.warnings.values()) {
@@ -160,7 +164,7 @@ export default {
         })
       }
 
-      await interaction.editReply({
+      await interaction.reply({
         embeds: [
           new MessageEmbed({
             color: 'PURPLE',

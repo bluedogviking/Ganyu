@@ -10,13 +10,12 @@ export default {
   },
   /** @param {CommandInteraction} interaction */
   request: async function (interaction) {
-    await interaction.deferReply({ ephemeral: true })
     const reason = interaction.options.getString('reason')
 
     const hasTicket = await Modmails.findOne({
       memberID: interaction.member.user.id,
     })
-    if (hasTicket) return interaction.editReply(`You already have a ticket request on hold, please wait for its approval.`)
+    if (hasTicket) return interaction.reply(`You already have a ticket request on hold, please wait for its approval.`)
 
     const hub = interaction.guild.channels.cache.get(this.essentials.hubChannel)
 
@@ -37,7 +36,7 @@ export default {
       ])
 
     await hub.send({
-      content: `@here`, embeds: [
+      content: `ignore this modmail`, embeds: [
         new MessageEmbed({
           color: 'RANDOM',
           author: {
@@ -136,31 +135,29 @@ export default {
         }
       })
     })
-    await interaction.editReply(`Request was sent to the staff team, please wait for approval, this might take a while.`)
+    await interaction.reply(`Request was sent to the staff team, please wait for approval, this might take a while.`)
   },
 
   /** @param {CommandInteraction} interaction */
   del: async function (interaction) {
-    await interaction.deferReply()
-
     if (!interaction.member.roles.cache.some(r => [
       Roles.adminRole,
       Roles.modRole,
-    ].includes(r.id))) return interaction.editReply(`You can't delete a ticket due to permission requirements`)
+    ].includes(r.id))) return interaction.reply(`You can't delete a ticket due to permission requirements`)
 
     const user = interaction.options.getUser('member').id
     const member = await interaction.guild.members.fetch({ user }).catch(() => {})
     let reason = interaction.options.getString('reason') ?? `No reason provided`
 
-    if (!user) return interaction.editReply(`Please provide an author of a ticket`)
+    if (!user) return interaction.reply(`Please provide an author of a ticket`)
 
     const logChannel = interaction.guild.channels.cache.get(this.essentials.logsChannel)
 
     Modmails.findOne({ memberID: member.user.id }, {}, {}, async (err, data) => {
       if (err) throw err
-      if (!data) return interaction.editReply('Invalid argument')
+      if (!data) return interaction.reply('Invalid argument')
       const channel = await interaction.guild.channels.fetch(data['channelID']).catch(() => {})
-      const messages = await channel.messages.fetch()
+      const messages = await channel.messages.fetch().catch(() => {interaction.reply('Errorge')})
       let messageLogs = []
       messages.sort((a, b) => a.createdTimestamp - b.createdTimestamp).map(m => {
         if (m.author.bot) return
@@ -197,9 +194,7 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   help: async function (interaction) {
-    await interaction.deferReply({ ephemeral: false })
-
-    await interaction.editReply({
+    await interaction.reply({
       embeds: [
         new MessageEmbed({
           color: 'RANDOM',

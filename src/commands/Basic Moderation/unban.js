@@ -21,8 +21,6 @@ export default {
     ),
 
   execute: async function (interaction) {
-    await interaction.deferReply()
-
     const user = interaction.options.getString('id', true)
     const reason = interaction.options.getString('reason',
       false,
@@ -31,14 +29,14 @@ export default {
 
     const isBanned = bans.has(user)
     if (!isBanned)
-      return interaction.editReply(`Invalid ID/is not banned.`)
+      return interaction.reply(`Invalid ID/is not banned.`)
 
     interaction.guild.bans.remove(user, reason)
       .then(unbanInfo => {
-        interaction.editReply(`Unbanned ${unbanInfo.tag ?? unbanInfo}`)
+        interaction.reply(`Unbanned ${unbanInfo.tag ?? unbanInfo}`)
       })
       .catch((error) => {
-        interaction.editReply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
+        interaction.reply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
       })
   },
 }
