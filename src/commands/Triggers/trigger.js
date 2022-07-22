@@ -17,17 +17,18 @@ export default {
 
   /** @param {CommandInteraction} interaction */
   execute: async function (interaction) {
-    await interaction.deferReply()
     const trigger = interaction.options.getString('trigger')
 
-    Triggers.findOne({ trigger }, {}, {}, (err, data) => {
+    Triggers.findOne({ trigger }, {}, {}, async (err, data) => {
       if (err) throw err
       if (!data)
         return interaction.editReply(`\`${trigger}\` does not exist`)
       if (data.isEmbed) {
-        interaction.editReply({ embeds: [new MessageEmbed(JSON.parse(data.json))] })
+        await interaction.deferReply()
+        await interaction.editReply({ embeds: [new MessageEmbed(JSON.parse(data.json))] })
       } else {
-        interaction.editReply(data.response)
+        await interaction.deferReply()
+        await interaction.editReply(data.response)
       }
     })
   },
