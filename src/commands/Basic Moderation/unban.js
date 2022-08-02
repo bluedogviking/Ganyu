@@ -36,7 +36,7 @@ export default {
         interaction.reply(`Unbanned ${unbanInfo.tag ?? unbanInfo}`)
       })
       .catch((error) => {
-        interaction.reply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
+        interaction.reply(`There was an error unbanning the user.\n${error.message}`)
       })
   },
 }

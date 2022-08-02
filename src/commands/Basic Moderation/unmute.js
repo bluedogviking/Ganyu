@@ -39,7 +39,7 @@ export default {
       })
 
     if (user === interaction.member.user.id)
-      return interaction.reply(`Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)
+      return interaction.reply(`You can't unmute yourself.`)
     else if (!member.manageable)
       return interaction.reply(`I can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)

@@ -29,7 +29,7 @@ export default {
     ) ?? `No reason provided by ${interaction.member.user.tag}`
 
     if (user === interaction.member.user.id)
-      return interaction.reply(`Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)
+      return interaction.reply(`You can't kick yourself.`)
     else if (!member.manageable)
       return interaction.reply(`I can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
@@ -52,7 +52,7 @@ export default {
         interaction.reply(`Kicked ${kickInfo.tag ?? kickInfo}`)
       })
       .catch((error) => {
-        interaction.reply(`I couldn't ${this.data.name} the user, sorry.\n${error.message}`)
+        interaction.reply(`There was an error kicking the member.\n${error.message}`)
       })
   },
 }

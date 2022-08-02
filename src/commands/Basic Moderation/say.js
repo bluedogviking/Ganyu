@@ -28,7 +28,7 @@ export default {
     const channel = await interaction.guild.channels.fetch(ch?.id)
       .catch(async (e) => {
         await interaction.reply({
-          content: `There was an error finding the channel.\nError message: ${e.message}`
+          content: `There was an error sending the message.\nError message: ${e.message}`
         })
       })
     const msg = interaction.options.getString('message')

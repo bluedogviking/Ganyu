@@ -47,7 +47,7 @@ export default {
 
     if (user === interaction.member.user.id)
       return interaction.reply(
-        `Why yes, I'd ${this.data.name} you myself if I had the chance to but yeah, this is not happening.`)
+        `You can't mute yourself.`)
     else if (!member.manageable)
       return interaction.reply(`I can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
     else if (member.roles.highest.position >= interaction.member.roles.highest.position)
@@ -56,7 +56,7 @@ export default {
     if (!duration) {
       member.roles.add(muteRole, reason)
         .then(member => {
-          interaction.reply(`Muted ${member.user.tag ?? member} indefinitely.`)
+          interaction.reply(`${member.user.tag ?? member} has been muted indefinitely.`)
         })
         .catch(error => {
           interaction.reply(`There was an error muting the member.\n${error.message}`)
@@ -65,7 +65,7 @@ export default {
       member.roles.add(muteRole, reason)
         .then(member => {
           interaction.reply(
-            `Muted ${member.user.tag ?? member} for ${prettyMilliseconds(ms(duration), { verbose: true })}.`)
+            `${member.user.tag ?? member} has been muted for ${prettyMilliseconds(ms(duration), { verbose: true })}.`)
         })
         .catch(error => {
           interaction.reply(`There was an error muting the member.\n${error.message}`)
