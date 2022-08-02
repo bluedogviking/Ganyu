@@ -5,9 +5,9 @@ import loader from './util/loader.js'
 config()
 
 export const Ganyu = new Client({
-  intents: 32767,
-  // presence: { status: 'dnd', activities: [{ type: 'LISTENING', name: '/modmail request' }] }
-  presence: { status: 'idle', activities: [{ type: 'PLAYING', name: 'maintenance.' }] }
+	intents: 32767,
+	presence: { status: 'dnd', activities: [{ type: 'LISTENING', name: '/modmail request' }] }
+	// presence: { status: 'idle', activities: [{ type: 'PLAYING', name: 'maintenance.' }] }
 })
 Ganyu.commands = new Collection()
 
