@@ -42,7 +42,7 @@ export default {
 
 		if (!isNSFW) {
 			await hub.send({
-				content: `ignore due to maintenance`, embeds: [
+				content: `@here`, embeds: [
 					new MessageEmbed({
 						color: 'RANDOM',
 						author: {
