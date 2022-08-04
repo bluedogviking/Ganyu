@@ -1,8 +1,9 @@
 import mongoose from 'mongoose'
 
 const ModmailsSchema = new mongoose.Schema({
-  memberID: String,
-  channelID: String,
+	memberID: String,
+	channelID: String,
+	isNSFW: Boolean
 })
 
 export default mongoose.model('modmails', ModmailsSchema)
