@@ -257,7 +257,8 @@ export default {
 	del: async function (interaction) {
 		if (!interaction.member.roles.cache.some(r => [
 			Roles.adminRole,
-			Roles.modRole
+			Roles.modRole,
+			Roles.nsfwModerator
 		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
 
 		const user = interaction.options.getUser('member').id
