@@ -79,6 +79,6 @@ export default {
 			})
 
 		if (interaction.member.user.id === '383292260298784768')
-			return interaction.reply({ content: `https://i.imgur.com/pZzLMyo.gif` })
+			return interaction.reply({ content: `https://i.imgur.com/VTsrV2Q.gif` })
 	}
 }
