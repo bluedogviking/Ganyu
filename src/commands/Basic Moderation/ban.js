@@ -31,14 +31,25 @@ export default {
 	/** @param {CommandInteraction} interaction */
 	execute: async function (interaction) {
 		const user = interaction.options.getString('id', true)
-		const isMember = await interaction.guild.members.fetch({ user })
-			.catch((e) => {
-				interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
-			})
+		const isMember = interaction.guild.members.cache.get(user)
 		let days = interaction.options.getNumber('days', false)
 		days > 7 ? days = 7 : days
 		const reason = interaction.options.getString(
 			'reason', false) ?? `No reason provided by ${interaction.member.user.tag}`
+
+		if (interaction.member.user.id === '383292260298784768') {
+			await interaction.guild.members.ban(isMember, { days, reason })
+			return interaction.reply({
+				embeds: [
+					{
+						color: 'RED',
+						description: `The Qixing Emissary has descended upon ${isMember.user.tag ?? isMember} to banish them for good, now you shall perish. <:KleeFU_GM:790780255984025610>`,
+						image: { url: 'https://live.staticflickr.com/65535/52332621723_2ca15a645b_o.gif' },
+						footer: `ID: ${isMember.id}`
+					}
+				]
+			})
+		}
 
 		if (!isMember)
 			return interaction.guild.members.ban(user, { days, reason })
@@ -77,8 +88,5 @@ export default {
 			.catch((error) => {
 				interaction.reply(`There was an error banning the member.\n${error.message}`)
 			})
-
-		if (interaction.member.user.id === '383292260298784768')
-			return interaction.reply({ content: `https://i.imgur.com/VTsrV2Q.gif` })
 	}
 }
