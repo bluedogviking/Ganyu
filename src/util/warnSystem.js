@@ -7,25 +7,22 @@ export default {
 	add: async function (interaction) {
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
-			.catch((e) => {
-				interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+			.catch(() => {
+				interaction.reply(`Invalid member.`)
 			})
 		const reason = interaction.options.getString('reason')
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole,
-			Roles.modRole,
-			Roles.creator
+			Roles.admin,
+			Roles.mod
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
 		if (user === interaction.member.user.id)
 			return interaction.reply(
 				`You can't ${interaction.commandName} yourself.`)
-		else if (!member.manageable)
-			return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 		else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-			return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
+			return interaction.reply(`You can't warn ${member.user.tag ?? member} due to role hierarchy.`)
 
 		Warns.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
 			if (err) throw err
@@ -71,23 +68,20 @@ export default {
 	remove: async function (interaction) {
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
-			.catch((e) => {
-				interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+			.catch(() => {
+				interaction.reply(`Invalid member.`)
 			})
 		const caseNum = interaction.options.getNumber('case-number')
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole,
-			Roles.modRole,
-			Roles.creator
+			Roles.admin,
+			Roles.mod
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
 		if (user === interaction.member.user.id)
 			return interaction.reply(
 				`You can't remove your own warning.`)
-		else if (!member.manageable)
-			return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 		else if (member.roles.highest.position >= interaction.member.roles.highest.position)
 			return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
@@ -107,19 +101,17 @@ export default {
 	clear: async function (interaction) {
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
-			.catch((e) => {
-				interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+			.catch(() => {
+				interaction.reply(`Invalid member.`)
 			})
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole, Roles.modRole, Roles.creator
+			Roles.admin, Roles.mod
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
 		if (user === interaction.member.user.id)
 			return interaction.reply(`You can't clear your own warnings.`)
-		else if (!member.manageable)
-			return interaction.reply(`I can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 		else if (member.roles.highest.position >= interaction.member.roles.highest.position)
 			return interaction.reply(`You can't ${interaction.commandName} ${member.user.tag ?? member} due to role hierarchy.`)
 
@@ -147,12 +139,12 @@ export default {
 	view: async function (interaction) {
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
-			.catch((e) => {
-				interaction.reply(`There was an error finding the member.\nError message: ${e.message}`)
+			.catch(() => {
+				interaction.reply(`Invalid member.`)
 			})
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole, Roles.modRole, Roles.creator
+			Roles.admin, Roles.mod
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -182,6 +174,8 @@ export default {
 						timestamp: new Date()
 					})
 				]
+			}).catch(() => {
+				interaction.reply('Please ask Zyla for help.')
 			})
 		})
 	}

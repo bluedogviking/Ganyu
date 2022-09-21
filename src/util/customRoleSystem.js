@@ -105,13 +105,11 @@ export default {
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
 			.catch(() => {
-				interaction.reply({ content: `I couldn't find the member.` })
+				interaction.reply({ content: `Couldn't find the member.` })
 			})
 
-		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole, Roles.creator
-		].includes(r.id)))
-			return await interaction.reply(`Only the high council can delete someone's custom role.`)
+		if (!interaction.member.roles.cache.has(Roles.admin))
+			return await interaction.reply(`Only Admins can delete one's custom role.`)
 
 		if (!member) return await interaction.reply({ content: `Could not find the member.` })
 

@@ -16,10 +16,6 @@ export default {
 			.addStringOption(reason => reason
 				.setName('reason')
 				.setDescription('Please provide a brief description of what your modmail is about')
-				.setRequired(true))
-			.addBooleanOption(isNsfw => isNsfw
-				.setName('is-nsfw')
-				.setDescription('Is the modmail for reaching out to NSFW Moderators?')
 				.setRequired(true)))
 		.addSubcommand(del => del
 			.setName('delete')

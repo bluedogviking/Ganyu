@@ -10,7 +10,7 @@ export default {
 		const response = interaction.options.getString('response')
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole
+			Roles.helper, Roles.mod, Roles.admin
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -53,7 +53,9 @@ export default {
 	delete: async function (interaction) {
 		const trigger = interaction.options.getString('trigger')
 
-		if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole].includes(r.id)))
+		if (!interaction.member.roles.cache.some(r => [
+			Roles.helper, Roles.mod, Roles.admin
+		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
 		Triggers.findOne({ trigger }, {}, {}, (err, data) => {
@@ -69,7 +71,9 @@ export default {
 	view: async function (interaction) {
 		const trigger = interaction.options.getString('trigger')
 
-		if (!interaction.member.roles.cache.some(r => [Roles.creator, Roles.guidingGoats, Roles.modRole, Roles.adminRole].includes(r.id)))
+		if (!interaction.member.roles.cache.some(r => [
+			Roles.helper, Roles.mod, Roles.admin
+		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
 		Triggers.findOne({ trigger }, {}, {}, async (err, data) => {

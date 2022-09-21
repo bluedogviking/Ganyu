@@ -3,40 +3,31 @@ import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 export default {
 	directory: 'Basic Moderation',
-	usage: `by-id id [reason]`,
+	usage: `id [reason]`,
 	requirements: 'Ban Members',
 	perms: 1n << 2n,
 
 	data: new SlashCommandBuilder()
 		.setName('ban')
 		.setDescription('Bans a user from the server.')
-		.addSubcommand(id_ban => id_ban
-			.setName('by-id')
-			.setDescription('Bans a user from the server by their id.')
-			.addStringOption(id => id
-				.setName('id')
-				.setDescription('The user to ban')
-				.setRequired(true))
-			.addStringOption(reason => reason
-				.setName('reason')
-				.setDescription('The reason for the ban')
-				.setRequired(false)
-			)
-			.addNumberOption(days => days
-				.setName('days')
-				.setDescription('Number of days of messages to delete, must be between 0 and 7, inclusive')
-				.setRequired(false))
+		.addStringOption(id => id
+			.setName('id')
+			.setDescription('The user to ban')
+			.setRequired(true))
+		.addStringOption(reason => reason
+			.setName('reason')
+			.setDescription('The reason for the ban')
 		),
 
 	/** @param {CommandInteraction} interaction */
 	execute: async function (interaction) {
-		const user = interaction.options.getString('id', true)
+		const user = interaction.options.getString('id')
 		const isMember = interaction.guild.members.cache.get(user)
-		let days = interaction.options.getNumber('days', false)
-		days > 7 ? days = 7 : days
+		let days = 7
 		const reason = interaction.options.getString(
 			'reason', false) ?? `No reason provided by ${interaction.member.user.tag}`
 
+		// if TDA
 		if (interaction.member.user.id === '383292260298784768') {
 			await interaction.guild.members.ban(isMember, { days, reason })
 			return interaction.reply({
@@ -63,8 +54,6 @@ export default {
 		if (user === interaction.member.user.id)
 			return interaction.reply(
 				`You can't ban yourself.`)
-		else if (!isMember.manageable)
-			return interaction.reply(`I can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)
 		else if (isMember.roles.highest.position >= interaction.member.roles.highest.position)
 			return interaction.reply(
 				`You can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)

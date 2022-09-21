@@ -6,7 +6,7 @@ import helper from '../../util/helpSystem.js'
 export default {
 	directory: 'Helper',
 	usage: `menu / command name`,
-	requirements: 'Members',
+	requirements: 'N/A',
 
 	data: new SlashCommandBuilder()
 		.setName('help')

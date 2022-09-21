@@ -5,16 +5,12 @@ import Modmails from '../database/models/modmails.js'
 export default {
 	channels: {
 		'hubChannel': '928757367426920528',
-		'nsfwHubChannel': '1004770566990995486',
 		'parentCategory': '839414864631169034',
-		'nsfwParentCategory': '1004770406344949860',
-		'logsChannel': '839414982323601408',
-		'nsfwLogsChannel': '1004770518496444467'
+		'logsChannel': '839414982323601408'
 	},
 	/** @param {CommandInteraction} interaction */
 	request: async function (interaction) {
 		const reason = interaction.options.getString('reason')
-		const isNSFW = interaction.options.getBoolean('is-nsfw')
 
 		const hasTicket = await Modmails.findOne({
 			memberID: interaction.member.user.id
@@ -22,7 +18,6 @@ export default {
 		if (hasTicket) return interaction.reply(`You already have a ticket request on hold, please wait for an answer.`)
 
 		const hub = interaction.guild.channels.cache.get(this.channels.hubChannel)
-		const nsfwHub = interaction.guild.channels.cache.get(this.channels.nsfwHubChannel)
 
 		if (reason > 1024) return reason.slice(1022, 1024).concat('...')
 
@@ -40,212 +35,106 @@ export default {
 					.setEmoji('<a:ganyuNo:876129975454011512>')
 			])
 
-		if (!isNSFW) {
-			await hub.send({
-				content: `@here`, embeds: [
-					new MessageEmbed({
-						color: 'RANDOM',
-						author: {
-							name: interaction.member.user.username,
-							iconURL: interaction.member.user.displayAvatarURL({ dynamic: true })
-						},
-						title: `New Ticket Request by ${interaction.member.user.tag}`,
-						description: `Their reason was:\n${reason}`,
-						footer: {
-							text: `ID: ${interaction.member.user.id}`
-						}
-					})
-				], components: [row]
-			}).then((msg) => {
-				Modmails.create({
-					memberID: interaction.member.user.id,
-					isNSFW: false
+		await hub.send({
+			content: `@here`, embeds: [
+				new MessageEmbed({
+					color: 'RANDOM',
+					author: {
+						name: interaction.member.user.username,
+						iconURL: interaction.member.user.displayAvatarURL({ dynamic: true })
+					},
+					title: `New Ticket Request by ${interaction.member.user.tag}`,
+					description: `Their reason was:\n${reason}`,
+					footer: {
+						text: `ID: ${interaction.member.user.id}`
+					}
 				})
+			], components: [row]
+		}).then((msg) => {
+			Modmails.create({
+				memberID: interaction.member.user.id
+			})
 
-				const collector = msg.createMessageComponentCollector({
-					componentType: 'BUTTON'
-				})
+			const collector = msg.createMessageComponentCollector({
+				componentType: 'BUTTON'
+			})
 
-				collector.on('collect', async i => {
-					if (!i.member.roles.cache.some(r => [
-						Roles.adminRole,
-						Roles.modRole
-					].includes(r.id))) return
+			collector.on('collect', async i => {
+				if (!i.member.roles.cache.some(r => [
+					Roles.admin,
+					Roles.mod
+				].includes(r.id))) return
 
-					switch (i.customId) {
-						case 'accept':
-							collector.stop()
-							msg.edit({ content: ' ', components: [] })
-							await i.reply({
-								content: `Modmail request accepted, request has been terminated.\nTransmitting redirection message to the member...\n**Responsible Moderator for acceptance is ${i.member.user.tag}**`
-							})
-							await interaction.guild.channels.create(`ticket-${interaction.member.user.discriminator.slice(2, 4)
-								.concat(Math.floor(Math.random() * 101).toString())}`, {
-								reason: 'modmail',
-								parent: this.channels.parentCategory,
-								type: 'GUILD_TEXT',
-								permissionOverwrites: [
-									{
-										id: Roles.adminRole,
-										type: 'role',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}, {
-										id: Roles.modRole,
-										type: 'role',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}, {
-										id: Roles.everyone,
-										type: 'role',
-										deny: ['VIEW_CHANNEL']
-									}, {
-										id: interaction.member.user.id,
-										type: 'member',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}
-								]
-							}).then(async (c) => {
-								await Modmails.updateOne({ memberID: interaction.member.user.id }, { channelID: c.id }, { upsert: true })
-								await interaction.member.user.send({
-									embeds: [
-										new MessageEmbed({
-											color: 'GREEN',
-											title: `About your modmail request.`,
-											description: `Your modmail request was accepted by ${i.member.user.tag}\nPlease proceed to ${c}!`,
-											timestamp: new Date()
-										})
-									]
-								}).catch(() => {})
-								await c.send({ content: `${interaction.member}, please wait. Our staff team will get to you as soon as possible!\nReason reminder for staff: ${reason}` })
-							})
-							break
-						default:
-							collector.stop()
-							await Modmails.findOneAndDelete({ memberID: interaction.member.user.id })
-							msg.edit({
-								content: ' ',
-								components: []
-							})
-							await i.reply({
-								content: `Modmail request declined, request has been terminated.\nTransmitting sad message to the member...\n**Responsible Moderator for refusal is ${i.member.user.tag}**`
-							})
-							interaction.member.user.send({
+				switch (i.customId) {
+					case 'accept':
+						collector.stop()
+						msg.edit({ content: ' ', components: [] })
+						await i.reply({
+							content: `Modmail request accepted, request has been terminated.\nTransmitting redirection message to the member...\n**Responsible Moderator for acceptance is ${i.member.user.tag}**`
+						})
+						await interaction.guild.channels.create(`ticket-${interaction.member.user.discriminator.slice(2, 4)
+							.concat(Math.floor(Math.random() * 101).toString())}`, {
+							reason: 'modmail',
+							parent: this.channels.parentCategory,
+							type: 'GUILD_TEXT',
+							permissionOverwrites: [
+								{
+									id: Roles.admin,
+									type: 'role',
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+								}, {
+									id: Roles.mod,
+									type: 'role',
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+								}, {
+									id: Roles.everyone,
+									type: 'role',
+									deny: ['VIEW_CHANNEL']
+								}, {
+									id: interaction.member.user.id,
+									type: 'member',
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+								}
+							]
+						}).then(async (c) => {
+							await Modmails.updateOne({ memberID: interaction.member.user.id }, { channelID: c.id }, { upsert: true })
+							await interaction.member.user.send({
 								embeds: [
 									new MessageEmbed({
-										color: 'RED',
-										title: `About your modmail request...`,
-										description: `Your modmail request was declined by ${i.member.user.tag}\nFeel free to request another modmail ticket if you need!`,
+										color: 'GREEN',
+										title: `About your modmail request.`,
+										description: `Your modmail request was accepted by ${i.member.user.tag}\nPlease proceed to ${c}!`,
 										timestamp: new Date()
 									})
 								]
 							}).catch(() => {})
-							break
-					}
-				})
+							await c.send({ content: `${interaction.member}, please wait. Our staff team will get to you as soon as possible!\nReason reminder for staff: ${reason}` })
+						})
+						break
+					default:
+						collector.stop()
+						await Modmails.findOneAndDelete({ memberID: interaction.member.user.id })
+						msg.edit({
+							content: ' ',
+							components: []
+						})
+						await i.reply({
+							content: `Modmail request declined, request has been terminated.\nTransmitting sad message to the member...\n**Responsible Moderator for refusal is ${i.member.user.tag}**`
+						})
+						interaction.member.user.send({
+							embeds: [
+								new MessageEmbed({
+									color: 'RED',
+									title: `About your modmail request...`,
+									description: `Your modmail request was declined by ${i.member.user.tag}\nFeel free to request another modmail ticket if you need!`,
+									timestamp: new Date()
+								})
+							]
+						}).catch(() => {})
+						break
+				}
 			})
-		} else {
-			await nsfwHub.send({
-				content: `<@&971545579773624360>`, embeds: [
-					new MessageEmbed({
-						color: 'RANDOM',
-						author: {
-							name: interaction.member.user.username,
-							iconURL: interaction.member.user.displayAvatarURL({ dynamic: true })
-						},
-						title: `New Ticket Request by ${interaction.member.user.tag}`,
-						description: `Their reason was:\n${reason}`,
-						footer: {
-							text: `ID: ${interaction.member.user.id}`
-						}
-					})
-				], components: [row]
-			}).then((msg) => {
-				Modmails.create({
-					memberID: interaction.member.user.id,
-					isNSFW: true
-				})
-
-				const collector = msg.createMessageComponentCollector({
-					componentType: 'BUTTON'
-				})
-
-				collector.on('collect', async i => {
-					if (!i.member.roles.cache.some(r => [
-						Roles.adminRole,
-						Roles.nsfwModerator
-					].includes(r.id))) return
-
-					switch (i.customId) {
-						case 'accept':
-							collector.stop()
-							msg.edit({ content: ' ', components: [] })
-							await i.reply({
-								content: `Modmail request accepted, request has been terminated.\nTransmitting redirection message to the member...\n**Responsible Moderator for acceptance is ${i.member.user.tag}**`
-							})
-							await interaction.guild.channels.create(`ticket-${interaction.member.user.discriminator.slice(2, 4)
-								.concat(Math.floor(Math.random() * 101).toString())}`, {
-								reason: 'modmail',
-								parent: this.channels.nsfwParentCategory,
-								type: 'GUILD_TEXT',
-								nsfw: true,
-								permissionOverwrites: [
-									{
-										id: Roles.adminRole,
-										type: 'role',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}, {
-										id: Roles.nsfwModerator,
-										type: 'role',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}, {
-										id: Roles.everyone,
-										type: 'role',
-										deny: ['VIEW_CHANNEL']
-									}, {
-										id: interaction.member.user.id,
-										type: 'member',
-										allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-									}
-								]
-							}).then(async (c) => {
-								await Modmails.updateOne({ memberID: interaction.member.user.id }, { channelID: c.id }, { upsert: true })
-								await interaction.member.user.send({
-									embeds: [
-										new MessageEmbed({
-											color: 'GREEN',
-											title: `About your modmail request.`,
-											description: `Your modmail request was accepted by ${i.member.user.tag}\nPlease proceed to ${c}!`,
-											timestamp: new Date()
-										})
-									]
-								}).catch(() => {})
-								await c.send({ content: `${interaction.member}, please wait. Our staff team will get to you as soon as possible!\nReason reminder for staff: ${reason}` })
-							})
-							break
-						default:
-							collector.stop()
-							await Modmails.findOneAndDelete({ memberID: interaction.member.user.id })
-							msg.edit({
-								content: ' ',
-								components: []
-							})
-							await i.reply({
-								content: `Modmail request declined, request has been terminated.\nTransmitting sad message to the member...\n**Responsible Moderator for refusal is ${i.member.user.tag}**`
-							})
-							interaction.member.user.send({
-								embeds: [
-									new MessageEmbed({
-										color: 'RED',
-										title: `About your modmail request...`,
-										description: `Your modmail request was declined by ${i.member.user.tag}\nFeel free to request another modmail ticket if you need!`,
-										timestamp: new Date()
-									})
-								]
-							}).catch(() => {})
-							break
-					}
-				})
-			})
-		}
+		})
 
 		await interaction.reply({
 			content: `Request was sent to the staff team, please wait for an answer, this might take a while.`,
@@ -256,9 +145,8 @@ export default {
 	/** @param {CommandInteraction} interaction */
 	del: async function (interaction) {
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.adminRole,
-			Roles.modRole,
-			Roles.nsfwModerator
+			Roles.admin,
+			Roles.mod
 		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
 
 		const user = interaction.options.getUser('member').id
@@ -268,7 +156,6 @@ export default {
 		if (!user) return interaction.reply(`Please provide an author of a ticket`)
 
 		const logChannel = interaction.guild.channels.cache.get(this.channels.logsChannel)
-		const nsfwLogChannel = interaction.guild.channels.cache.get(this.channels.nsfwLogsChannel)
 
 		Modmails.findOne({ memberID: member.user.id }, {}, {}, async (err, data) => {
 			if (err) throw err
@@ -292,25 +179,16 @@ export default {
 					messageLogs.push(`${m.author.tag}: ${m.content}`)
 				}
 			})
-			if (!data.isNSFW) {
-				await logChannel.send({
-					content: `${member.user.tag}'s ticket was closed by ${interaction.member.user.tag} with reason: ${reason}\nView attachment below for full logs;`,
-					files: [
-						new MessageAttachment(Buffer.from(messageLogs.join('\n')),
-							`${interaction.member.user.username}-logs.txt`
-						)
-					]
-				})
-			} else {
-				await nsfwLogChannel.send({
-					content: `${member.user.tag}'s ticket was closed by ${interaction.member.user.tag} with reason: ${reason}\nView attachment below for full logs;`,
-					files: [
-						new MessageAttachment(Buffer.from(messageLogs.join('\n')),
-							`${interaction.member.user.username}-logs.txt`
-						)
-					]
-				})
-			}
+
+			await logChannel.send({
+				content: `${member.user.tag}'s ticket was closed by ${interaction.member.user.tag} with reason: ${reason}\nView attachment below for full logs;`,
+				files: [
+					new MessageAttachment(Buffer.from(messageLogs.join('\n')),
+						`${interaction.member.user.username}-logs.txt`
+					)
+				]
+			})
+
 			await channel.delete('ticket deleted')
 			await interaction.reply({ content: 'Frostflake goes woosh and ticket goes boom.' })
 			await member.send({
@@ -340,10 +218,6 @@ export default {
 							name: '/modmail request',
 							value: 'Request command is used to create a modmail ticket by requesting it from staff with a reason, when you enter the command with a reason, staff team will be pinged and they will either accept or reject the request.\nIf accepted, a new channel will be created and you will be pinged in there...\n\n**I.E.**\n/modmail request __reason:__ role request',
 							inline: false
-						},
-						{
-							name: '/modmail request is-nsfw',
-							value: `By adding "is-nsfw" parameter and setting it to "True", your modmail will be handled by our NSFW Moderators.\n\nI.E.\n/modmail request __reason:__ Can I post this art in NSFW? is-nsfw: True`
 						}
 					]
 				})
