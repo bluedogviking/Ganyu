@@ -8,5 +8,5 @@ export default {
 	'nsfwAccess': '913284186310324274',
 	'nsfwMod': '971545579773624360',
 	'nsfwMuted': '1022155863290560622',
-	'nsfwBanned': '976604578986479656'
+	'nsfwBanned': '976604578986479656',
 }

@@ -39,53 +39,49 @@ export default {
 		let reason = interaction.options.getString('reason') ?? `No reason provided by ${interaction.member.user.tag}`
 
 		const muteRole = await interaction.guild.roles.fetch(Roles.muted, { cache: false })
-			.catch(() => {})
+			.catch(() => {
+			})
 
-		if (user === interaction.member.user.id)
-			return interaction.reply(
-				`You can't mute yourself.`)
-		else if (member.roles.highest.position >= interaction.member.roles.highest.position)
-			return interaction.reply(`You can't mute ${member.user.tag ?? member} due to role hierarchy.`)
+		if (user === interaction.member.user.id) return interaction.reply(`You can't mute yourself.`)
+		else if (member.roles.highest.position >= interaction.member.roles.highest.position) return interaction.reply(`You can't mute ${member.user.tag ?? member} due to role hierarchy.`)
 
 		if (!duration) {
 			member.roles.add(muteRole, reason)
 				.then(member => {
 					interaction.reply(`${member.user.tag ?? member} has been muted indefinitely.`)
 				})
-				.catch(() => {})
+				.catch(() => {
+				})
 		} else {
 			member.roles.add(muteRole, reason)
 				.then(member => {
-					interaction.reply(
-						`${member.user.tag ?? member} has been muted for ${prettyMilliseconds(ms(duration), { verbose: true })}.`)
+					interaction.reply(`${member.user.tag ?? member} has been muted for ${prettyMilliseconds(ms(duration), { verbose: true })}.`)
 				})
-				.catch(() => {})
+				.catch(() => {
+				})
 		}
 
 		await member.send({
-			embeds: [
-				new MessageEmbed({
+				embeds: [new MessageEmbed({
 					color: 'RED',
 					title: `You have been muted in ${interaction.guild.name}!`,
-					description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}\nDuration: ${duration ? prettyMilliseconds(
-						ms(duration), { verbose: true }) : 'Permanently'}`,
-					timestamp: new Date()
-				})
-			]
-		})
-			.catch(() => {})
+					description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}\nDuration: ${duration ? prettyMilliseconds(ms(duration), { verbose: true }) : 'Permanently'}`,
+					timestamp: new Date(),
+				})],
+			})
+			.catch(() => {
+			})
 
 		Mutes.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
 			if (err) throw err
 			if (!data) {
 				await Mutes.create({
-					memberID: member.id,
-					unmuteAt: duration ? Date.now() + ms(duration) : Infinity
+					memberID: member.id, unmuteAt: duration ? Date.now() + ms(duration) : Infinity,
 				})
 			} else {
 				data.unmuteAt = duration ? Date.now() + ms(duration) : Infinity
 				data.save()
 			}
 		})
-	}
+	},
 }

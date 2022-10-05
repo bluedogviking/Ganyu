@@ -20,21 +20,20 @@ export default {
 						})
 
 					if (muted['unmuteAt'] <= Date.now()) {
-						await member.roles.remove(Roles.muteRole)
+						await member.roles.remove(Roles.muted)
 						muted.delete()
 						member.send({
-							embeds: [
-								new MessageEmbed({
+								embeds: [new MessageEmbed({
 									color: 'GREEN',
 									title: `You have been unmuted in ${guild.name}`,
-									description: `This is an automatic unmute.`
-								})
-							]
-						})
-							.catch(() => {})
+									description: `This is an automatic unmute.`,
+								})],
+							})
+							.catch(() => {
+							})
 					}
 				}
 			})
 		}, 10000)
-	}
+	},
 }

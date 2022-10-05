@@ -13,7 +13,7 @@ export default {
 		.setDescription('Learn more about my commands! (You have 1 minutes until menu expires.)')
 		.addSubcommand(menu => menu
 			.setName('menu')
-			.setDescription('Brings up the help menu.')
+			.setDescription('Brings up the help menu.'),
 		)
 		.addSubcommand(search => search
 			.setName('search')
@@ -21,7 +21,7 @@ export default {
 			.addStringOption(command => command
 				.setName('command')
 				.setDescription('Command to look for')
-				.setRequired(true))
+				.setRequired(true)),
 		),
 
 	/** @param {CommandInteraction} interaction */
@@ -46,21 +46,23 @@ export default {
 							new MessageEmbed({
 								author: {
 									name: interaction.client.user.username,
-									iconURL: interaction.client.user.avatarURL({ dynamic: true })
+									iconURL: interaction.client.user.avatarURL({ dynamic: true }),
 								},
 								color: 'RANDOM',
 								title: command.data.name,
 								description: command.data.description,
 								fields: [
 									{
-										name: 'Usage', value: command.usage ?? 'Not assigned', inline: true
+										name: 'Usage', value: command.usage ?? 'Not assigned', inline: true,
 									}, {
-										name: 'Required Permissions', value: command.requirements ?? 'None', inline: true
-									}
+										name: 'Required Permissions',
+										value: command.requirements ?? 'None',
+										inline: true,
+									},
 								],
-								timestamp: new Date()
-							})
-						]
+								timestamp: new Date(),
+							}),
+						],
 					})
 					break
 			}
@@ -68,5 +70,5 @@ export default {
 		} catch (err) {
 			console.log(err)
 		}
-	}
+	},
 }

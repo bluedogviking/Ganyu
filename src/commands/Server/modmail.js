@@ -46,5 +46,5 @@ export default {
 				await ModmailSystem.help(interaction)
 				break
 		}
-	}
+	},
 }

@@ -14,12 +14,12 @@ export default {
 		.addStringOption(msg => msg
 			.setName('message')
 			.setDescription('What do you want me to say?')
-			.setRequired(true)
+			.setRequired(true),
 		)
 		.addChannelOption(ch => ch
 			.setName('channel')
 			.setDescription('Which channel do you want me to send the message to?')
-			.setRequired(true)
+			.setRequired(true),
 		),
 
 	/** @param {CommandInteraction} interaction */
@@ -34,5 +34,5 @@ export default {
 		channel.send(msg).then(async () => {
 			await interaction.reply({ ephemeral: true, content: 'Message sent!' })
 		})
-	}
+	},
 }

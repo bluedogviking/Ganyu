@@ -29,7 +29,8 @@ export default {
 			})
 
 		const muteRole = await interaction.guild.roles.fetch(Roles.muted, { cache: false })
-			.catch(() => {})
+			.catch(() => {
+			})
 
 		if (user === interaction.member.user.id)
 			return interaction.reply(`You can't unmute yourself.`)
@@ -45,21 +46,22 @@ export default {
 			})
 
 		await member.send({
-			embeds: [
-				new MessageEmbed({
-					color: 'RED',
-					title: `You have been unmuted in ${interaction.guild.name}!`,
-					description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})`,
-					timestamp: new Date()
-				})
-			]
-		})
-			.catch(() => {})
+				embeds: [
+					new MessageEmbed({
+						color: 'RED',
+						title: `You have been unmuted in ${interaction.guild.name}!`,
+						description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})`,
+						timestamp: new Date(),
+					}),
+				],
+			})
+			.catch(() => {
+			})
 
 		mutes.findOne({ member_id: member.id }, {}, {}, async (err, data) => {
 			if (err) throw err
 			if (!data) return
 			data.delete()
 		})
-	}
+	},
 }

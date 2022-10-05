@@ -58,7 +58,7 @@ export default {
 			await EmoteCredits.create({
 				author,
 				emote,
-				socials
+				socials,
 			}).then(data => {
 				return interaction.reply({ content: `Added ${data.emote} to the database.` })
 			})
@@ -93,8 +93,8 @@ export default {
 			return interaction.reply({
 				embeds: [{
 					color: 'RANDOM',
-					description: `**Author**: ${data.author}\n**Socials**: ${data.socials}\n**Emote**: ${data.emote}`
-				}]
+					description: `**Author**: ${data.author}\n**Socials**: ${data.socials}\n**Emote**: ${data.emote}`,
+				}],
 			})
 		})
 	},
@@ -111,8 +111,8 @@ export default {
 				files: [
 					new MessageAttachment(Buffer.from(data.map(value => {
 						return `# Emote\n- ${value['emote']}\n`
-					}).sort().join('\n')), 'Emotes.md')
-				]
+					}).sort().join('\n')), 'Emotes.md'),
+				],
 			})
 		})
 	},
@@ -141,5 +141,5 @@ export default {
 				this.list(interaction)
 				break
 		}
-	}
+	},
 }

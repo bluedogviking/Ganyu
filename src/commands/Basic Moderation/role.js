@@ -21,7 +21,7 @@ export default {
 			.addRoleOption(role => role
 				.setName('role')
 				.setDescription('The role to add')
-				.setRequired(true))
+				.setRequired(true)),
 		)
 		.addSubcommand(remove => remove
 			.setName('remove')
@@ -33,7 +33,7 @@ export default {
 			.addRoleOption(role => role
 				.setName('role')
 				.setDescription('The role to remove')
-				.setRequired(true))
+				.setRequired(true)),
 		),
 
 	/** @param {CommandInteraction} interaction */
@@ -50,7 +50,7 @@ export default {
 			})
 
 		if (role.position >= interaction.member.roles.highest.position)
-			return await interaction.reply("You can't alter someone greater than you.")
+			return await interaction.reply('You can\'t alter someone greater than you.')
 
 		if (member.roles.cache.has(role.id)) {
 			await member.roles.remove(role.id).then(member => {
@@ -61,5 +61,5 @@ export default {
 				interaction.reply(`Added **${role.name}** to **${member.user.tag}**`)
 			})
 		}
-	}
+	},
 }

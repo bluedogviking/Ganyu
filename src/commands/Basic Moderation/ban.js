@@ -16,7 +16,7 @@ export default {
 			.setRequired(true))
 		.addStringOption(reason => reason
 			.setName('reason')
-			.setDescription('The reason for the ban')
+			.setDescription('The reason for the ban'),
 		),
 
 	/** @param {CommandInteraction} interaction */
@@ -36,9 +36,9 @@ export default {
 						color: 'RED',
 						description: `The Qixing Emissary has descended upon ${isMember.user.tag ?? isMember} to banish them for good, now you shall perish. <:KleeFU_GM:790780255984025610>`,
 						image: { url: 'https://live.staticflickr.com/65535/52332621723_2ca15a645b_o.gif' },
-						footer: `ID: ${isMember.id}`
-					}
-				]
+						footer: `ID: ${isMember.id}`,
+					},
+				],
 			})
 		}
 
@@ -59,16 +59,17 @@ export default {
 				`You can't ${this.data.name} ${isMember.user.tag ?? isMember} due to role hierarchy.`)
 
 		await isMember.send({
-			embeds: [
-				new MessageEmbed({
-					color: 'RED',
-					title: `You have been banned from ${interaction.guild.name}!`,
-					description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}`,
-					timestamp: new Date()
-				})
-			]
-		})
-			.catch(() => {})
+				embeds: [
+					new MessageEmbed({
+						color: 'RED',
+						title: `You have been banned from ${interaction.guild.name}!`,
+						description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}`,
+						timestamp: new Date(),
+					}),
+				],
+			})
+			.catch(() => {
+			})
 
 		interaction.guild.members.ban(isMember.id, { days, reason })
 			.then(banInfo => {
@@ -77,5 +78,5 @@ export default {
 			.catch((error) => {
 				interaction.reply(`There was an error banning the member.\n${error.message}`)
 			})
-	}
+	},
 }

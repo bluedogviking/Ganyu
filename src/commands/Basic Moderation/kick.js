@@ -16,7 +16,7 @@ export default {
 			.setRequired(true))
 		.addStringOption(reason => reason
 			.setName('reason')
-			.setDescription('Reason for kicking')
+			.setDescription('Reason for kicking'),
 		),
 
 	/** @param {CommandInteraction} interaction */
@@ -26,7 +26,7 @@ export default {
 			interaction.reply('Invalid member.')
 		})
 		const reason = interaction.options.getString('reason',
-			false
+			false,
 		) ?? `No reason provided by ${interaction.member.user.tag}`
 
 		if (user === interaction.member.user.id)
@@ -35,16 +35,17 @@ export default {
 			return interaction.reply(`You can't ${this.data.name} ${member.user.tag ?? member} due to role hierarchy.`)
 
 		await member.send({
-			embeds: [
-				new MessageEmbed({
-					color: 'RED',
-					title: `You have been kicked from ${interaction.guild.name}!`,
-					description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}`,
-					timestamp: new Date()
-				})
-			]
-		})
-			.catch(() => {})
+				embeds: [
+					new MessageEmbed({
+						color: 'RED',
+						title: `You have been kicked from ${interaction.guild.name}!`,
+						description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}`,
+						timestamp: new Date(),
+					}),
+				],
+			})
+			.catch(() => {
+			})
 
 		interaction.guild.members.kick(member.id, reason)
 			.then(kickInfo => {
@@ -53,5 +54,5 @@ export default {
 			.catch((error) => {
 				interaction.reply(`There was an error kicking the member.\n${error.message}`)
 			})
-	}
+	},
 }

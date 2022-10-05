@@ -5,7 +5,7 @@ import Roles from '../constants/roles.js'
 export default {
 	roles: {
 		'nitroBoosterRole': '790760417265844236',
-		'parentRole': '807040777120251904'
+		'parentRole': '807040777120251904',
 	},
 
 	/** @param {CommandInteraction} interaction */
@@ -32,14 +32,14 @@ export default {
 			name: roleName,
 			icon: roleIcon,
 			position: parentRole.position - 1,
-			reason: 'Custom Role'
+			reason: 'Custom Role',
 		}).then(role => {
 			CustomRoles.findOne({ memberID: interaction.member.user.id }, {}, {}, async (err, data) => {
 				if (err) throw err
 				if (!data) {
 					await CustomRoles.create({
 						memberID: interaction.member.user.id,
-						roleID: role.id
+						roleID: role.id,
 					})
 					await interaction.member.roles.add(role.id)
 					return interaction.reply('Your custom role is generated and granted, enjoy.')
@@ -71,7 +71,7 @@ export default {
 			switch (property) {
 				case 'name':
 					await interaction.guild.roles.edit(role, {
-						name: value
+						name: value,
 					}).then((role) => {
 						return interaction.reply(`Your role name is now updated to \`${role.name}\``)
 					}).catch((e) => {
@@ -80,7 +80,7 @@ export default {
 					break
 				case 'color':
 					await interaction.guild.roles.edit(role, {
-						color: value
+						color: value,
 					}).then((role) => {
 						return interaction.reply(`Your role color is now updated to \`${role.color}\``)
 					}).catch((e) => {
@@ -89,7 +89,7 @@ export default {
 					break
 				case 'icon':
 					await interaction.guild.roles.edit(role, {
-						icon: value
+						icon: value,
 					}).then(() => {
 						return interaction.reply(`Your role icon is now updated.`)
 					}).catch((e) => {
@@ -116,7 +116,8 @@ export default {
 		CustomRoles.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
 			if (err) throw err
 			if (!data) return interaction.reply(`${member.user.tag ?? member} does not have a custom role.`)
-			const role = await interaction.guild.roles.fetch(data['roleID']).catch(() => {})
+			const role = await interaction.guild.roles.fetch(data['roleID']).catch(() => {
+			})
 			await interaction.guild.roles.delete(role).then(async () => {
 				data.delete()
 				await member.send(`Your custom role has been deleted by ${interaction.member.user.tag}.`)
@@ -125,5 +126,5 @@ export default {
 				interaction.reply(`There was an error while deleting the role.\nError: ${e.message}`)
 			})
 		})
-	}
+	},
 }

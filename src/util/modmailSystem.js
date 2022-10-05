@@ -6,14 +6,14 @@ export default {
 	channels: {
 		'hubChannel': '928757367426920528',
 		'parentCategory': '839414864631169034',
-		'logsChannel': '839414982323601408'
+		'logsChannel': '839414982323601408',
 	},
 	/** @param {CommandInteraction} interaction */
 	request: async function (interaction) {
 		const reason = interaction.options.getString('reason')
 
 		const hasTicket = await Modmails.findOne({
-			memberID: interaction.member.user.id
+			memberID: interaction.member.user.id,
 		})
 		if (hasTicket) return interaction.reply(`You already have a ticket request on hold, please wait for an answer.`)
 
@@ -32,7 +32,7 @@ export default {
 					.setCustomId('decline')
 					.setStyle('DANGER')
 					.setLabel('Reject')
-					.setEmoji('<a:ganyuNo:876129975454011512>')
+					.setEmoji('<a:ganyuNo:876129975454011512>'),
 			])
 
 		await hub.send({
@@ -41,28 +41,28 @@ export default {
 					color: 'RANDOM',
 					author: {
 						name: interaction.member.user.username,
-						iconURL: interaction.member.user.displayAvatarURL({ dynamic: true })
+						iconURL: interaction.member.user.displayAvatarURL({ dynamic: true }),
 					},
 					title: `New Ticket Request by ${interaction.member.user.tag}`,
 					description: `Their reason was:\n${reason}`,
 					footer: {
-						text: `ID: ${interaction.member.user.id}`
-					}
-				})
-			], components: [row]
+						text: `ID: ${interaction.member.user.id}`,
+					},
+				}),
+			], components: [row],
 		}).then((msg) => {
 			Modmails.create({
-				memberID: interaction.member.user.id
+				memberID: interaction.member.user.id,
 			})
 
 			const collector = msg.createMessageComponentCollector({
-				componentType: 'BUTTON'
+				componentType: 'BUTTON',
 			})
 
 			collector.on('collect', async i => {
 				if (!i.member.roles.cache.some(r => [
 					Roles.admin,
-					Roles.mod
+					Roles.mod,
 				].includes(r.id))) return
 
 				switch (i.customId) {
@@ -70,7 +70,7 @@ export default {
 						collector.stop()
 						msg.edit({ content: ' ', components: [] })
 						await i.reply({
-							content: `Modmail request accepted, request has been terminated.\nTransmitting redirection message to the member...\n**Responsible Moderator for acceptance is ${i.member.user.tag}**`
+							content: `Modmail request accepted, request has been terminated.\nTransmitting redirection message to the member...\n**Responsible Moderator for acceptance is ${i.member.user.tag}**`,
 						})
 						await interaction.guild.channels.create(`ticket-${interaction.member.user.discriminator.slice(2, 4)
 							.concat(Math.floor(Math.random() * 101).toString())}`, {
@@ -81,21 +81,21 @@ export default {
 								{
 									id: Roles.admin,
 									type: 'role',
-									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
 								}, {
 									id: Roles.mod,
 									type: 'role',
-									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
 								}, {
 									id: Roles.everyone,
 									type: 'role',
-									deny: ['VIEW_CHANNEL']
+									deny: ['VIEW_CHANNEL'],
 								}, {
 									id: interaction.member.user.id,
 									type: 'member',
-									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES']
-								}
-							]
+									allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+								},
+							],
 						}).then(async (c) => {
 							await Modmails.updateOne({ memberID: interaction.member.user.id }, { channelID: c.id }, { upsert: true })
 							await interaction.member.user.send({
@@ -104,10 +104,11 @@ export default {
 										color: 'GREEN',
 										title: `About your modmail request.`,
 										description: `Your modmail request was accepted by ${i.member.user.tag}\nPlease proceed to ${c}!`,
-										timestamp: new Date()
-									})
-								]
-							}).catch(() => {})
+										timestamp: new Date(),
+									}),
+								],
+							}).catch(() => {
+							})
 							await c.send({ content: `${interaction.member}, please wait. Our staff team will get to you as soon as possible!\nReason reminder for staff: ${reason}` })
 						})
 						break
@@ -116,10 +117,10 @@ export default {
 						await Modmails.findOneAndDelete({ memberID: interaction.member.user.id })
 						msg.edit({
 							content: ' ',
-							components: []
+							components: [],
 						})
 						await i.reply({
-							content: `Modmail request declined, request has been terminated.\nTransmitting sad message to the member...\n**Responsible Moderator for refusal is ${i.member.user.tag}**`
+							content: `Modmail request declined, request has been terminated.\nTransmitting sad message to the member...\n**Responsible Moderator for refusal is ${i.member.user.tag}**`,
 						})
 						interaction.member.user.send({
 							embeds: [
@@ -127,10 +128,11 @@ export default {
 									color: 'RED',
 									title: `About your modmail request...`,
 									description: `Your modmail request was declined by ${i.member.user.tag}\nFeel free to request another modmail ticket if you need!`,
-									timestamp: new Date()
-								})
-							]
-						}).catch(() => {})
+									timestamp: new Date(),
+								}),
+							],
+						}).catch(() => {
+						})
 						break
 				}
 			})
@@ -138,7 +140,7 @@ export default {
 
 		await interaction.reply({
 			content: `Request was sent to the staff team, please wait for an answer, this might take a while.`,
-			ephemeral: true
+			ephemeral: true,
 		})
 	},
 
@@ -146,11 +148,12 @@ export default {
 	del: async function (interaction) {
 		if (!interaction.member.roles.cache.some(r => [
 			Roles.admin,
-			Roles.mod
+			Roles.mod,
 		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
 
 		const user = interaction.options.getUser('member').id
-		const member = await interaction.guild.members.fetch({ user }).catch(() => {})
+		const member = await interaction.guild.members.fetch({ user }).catch(() => {
+		})
 		let reason = interaction.options.getString('reason') ?? `No reason provided`
 
 		if (!user) return interaction.reply(`Please provide an author of a ticket`)
@@ -184,9 +187,9 @@ export default {
 				content: `${member.user.tag}'s ticket was closed by ${interaction.member.user.tag} with reason: ${reason}\nView attachment below for full logs;`,
 				files: [
 					new MessageAttachment(Buffer.from(messageLogs.join('\n')),
-						`${interaction.member.user.username}-logs.txt`
-					)
-				]
+						`${interaction.member.user.username}-logs.txt`,
+					),
+				],
 			})
 
 			await channel.delete('ticket deleted')
@@ -197,9 +200,9 @@ export default {
 						color: 'RANDOM',
 						title: `About your modmail ticket...`,
 						description: `Your modmail ticket was closed by ${interaction.member.user.tag} with reason: ${reason}\nWe hope we helped you, feel free to reach out to us again in the future!`,
-						timestamp: new Date()
-					})
-				]
+						timestamp: new Date(),
+					}),
+				],
 			})
 			data.delete()
 		})
@@ -217,11 +220,11 @@ export default {
 						{
 							name: '/modmail request',
 							value: 'Request command is used to create a modmail ticket by requesting it from staff with a reason, when you enter the command with a reason, staff team will be pinged and they will either accept or reject the request.\nIf accepted, a new channel will be created and you will be pinged in there...\n\n**I.E.**\n/modmail request __reason:__ role request',
-							inline: false
-						}
-					]
-				})
-			]
+							inline: false,
+						},
+					],
+				}),
+			],
 		})
-	}
+	},
 }

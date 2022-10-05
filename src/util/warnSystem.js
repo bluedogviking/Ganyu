@@ -14,7 +14,7 @@ export default {
 
 		if (!interaction.member.roles.cache.some(r => [
 			Roles.admin,
-			Roles.mod
+			Roles.mod,
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -29,13 +29,13 @@ export default {
 			if (!data) {
 				data = new Warns({
 					memberID: member.id,
-					warnings: new Map()
+					warnings: new Map(),
 				})
 				data.warnings.set(`${data.warnings.size + 1}`, {
 					case: data.warnings.size + 1,
 					moderatorID: interaction.member.user.id,
 					reason,
-					date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`
+					date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`,
 				})
 				data.save()
 			} else {
@@ -44,8 +44,8 @@ export default {
 						case: data.warnings.size + 1,
 						moderatorID: interaction.member.user.id,
 						reason,
-						date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`
-					}
+						date: `<t:${Math.round(interaction.createdTimestamp / 1000)}:R>`,
+					},
 				)
 				data.save()
 			}
@@ -56,10 +56,11 @@ export default {
 						color: 'RED',
 						title: `You have been warned in ${interaction.guild.name}`,
 						description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})\nReason: ${reason}`,
-						timestamp: new Date()
-					})
-				]
-			}).catch(() => {})
+						timestamp: new Date(),
+					}),
+				],
+			}).catch(() => {
+			})
 		})
 		await interaction.reply(`${member.user.tag ?? member} has been warned.`)
 	},
@@ -75,7 +76,7 @@ export default {
 
 		if (!interaction.member.roles.cache.some(r => [
 			Roles.admin,
-			Roles.mod
+			Roles.mod,
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -106,7 +107,7 @@ export default {
 			})
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.admin, Roles.mod
+			Roles.admin, Roles.mod,
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -127,9 +128,9 @@ export default {
 						color: 'GREEN',
 						title: 'Your Warn History has been cleared!',
 						description: `Responsible Moderator: ${interaction.member.user.tag ?? interaction.member}-(${interaction.member.user.id})`,
-						timestamp: new Date()
-					})
-				]
+						timestamp: new Date(),
+					}),
+				],
 			})
 			interaction.reply(`${member.user.tag ?? member}'s warn history has been cleared.`)
 		})
@@ -144,7 +145,7 @@ export default {
 			})
 
 		if (!interaction.member.roles.cache.some(r => [
-			Roles.admin, Roles.mod
+			Roles.admin, Roles.mod,
 		].includes(r.id)))
 			return interaction.reply(`Insufficient permissions.`)
 
@@ -155,11 +156,12 @@ export default {
 
 			const fields = []
 			for (const value of data.warnings.values()) {
-				const moderator = await interaction.guild.members.fetch({ user: value.moderatorID }).catch(() => {})
+				const moderator = await interaction.guild.members.fetch({ user: value.moderatorID }).catch(() => {
+				})
 				fields.push({
 					name: `Case: ${value.case}`,
 					value: `Moderator: ${moderator.user.tag ?? moderator}\nReason: ${value.reason}\nDate: ${value.date}`,
-					inline: true
+					inline: true,
 				})
 			}
 
@@ -171,12 +173,12 @@ export default {
 						description: 'Please clear out redundant warnings as Discord embeds have a limit of 6000 characters, this function may not work in the future with many warnings.',
 						fields,
 						footer: { text: `ID: ${member.id}` },
-						timestamp: new Date()
-					})
-				]
+						timestamp: new Date(),
+					}),
+				],
 			}).catch(() => {
 				interaction.reply('Please ask Zyla for help.')
 			})
 		})
-	}
+	},
 }
