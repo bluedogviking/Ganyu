@@ -6,7 +6,7 @@ import Mutes from '../../database/models/mutes.js'
 import Roles from '../../constants/roles.js'
 
 export default {
-	directory: 'Basic Moderation',
+	directory: 'Moderation',
 	usage: `member id [duration] [reason]`,
 	requirements: 'Mute Members & Manage Roles',
 	perms: 1n << 22n | 1n << 28n,

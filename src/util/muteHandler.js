@@ -1,12 +1,13 @@
-import mutes from '../database/models/mutes.js'
+import Mutes from '../database/models/mutes.js'
 import { MessageEmbed } from 'discord.js'
 import Roles from '../constants/roles.js'
+import NsfwMutes from '../database/models/nsfwMutes.js'
 
 export default {
 	checkMutes: async function (client) {
 		const guild = await client.guilds.fetch({ guild: process.env.GUILD })
 		setInterval(async () => {
-			mutes.find(async (err, data) => {
+			Mutes.find(async (err, data) => {
 				if (err) throw err
 				if (!data) return
 
@@ -31,6 +32,31 @@ export default {
 							})
 							.catch(() => {
 							})
+					}
+				}
+			})
+		}, 10000)
+	},
+
+	checkNsfwMutes: async function (client) {
+		const guild = await client.guilds.fetch({ guild: process.env.GUILD })
+		setInterval(async () => {
+			NsfwMutes.find(async (err, data) => {
+				if (err) throw err
+				if (!data) return
+
+				for (const muted of data) {
+					const member = await guild.members
+						.fetch({ user: muted['memberID'] })
+						.catch(() => {
+							muted.delete()
+						})
+
+					if (muted['unmuteAt'] <= Date.now()) {
+						await member.roles.remove(Roles.nsfwMuted)
+						muted.delete()
+						member.send({ content: `Your NSFW Mute has been removed automatically.` })
+							.catch(() => {})
 					}
 				}
 			})

@@ -12,5 +12,6 @@ export default {
 		zaq.ok(`Ready as ${client.user.tag}`)
 		await mongoose.connect(process.env.MONGOOSE_URL)
 		await MuteHandler.checkMutes(client)
+		await MuteHandler.checkNsfwMutes(client)
 	},
 }

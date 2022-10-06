@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 export default {
-	directory: 'Basic Moderation',
+	directory: 'Moderation',
 	usage: `member [reason]`,
 	requirements: 'Kick Members',
 	perms: 1n << 1n,

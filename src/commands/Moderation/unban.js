@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export default {
-	directory: 'Basic Moderation',
+	directory: 'Moderation',
 	usage: `id [reason]`,
 	requirements: 'Ban Members',
 	perms: 1n << 2n,

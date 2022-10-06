@@ -3,7 +3,7 @@ import { CommandInteraction } from 'discord.js'
 import WarnSystem from '../../util/warnSystem.js'
 
 export default {
-	directory: 'Basic Moderation',
+	directory: 'Moderation',
 	usage: 'Go Figure',
 	requirements: 'Moderator',
 

@@ -3,7 +3,7 @@ import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export default {
-	directory: 'Basic Moderation',
+	directory: 'Moderation',
 	usage: `member role`,
 	requirements: 'Manage Roles',
 	perms: ['MANAGE_ROLES'],
