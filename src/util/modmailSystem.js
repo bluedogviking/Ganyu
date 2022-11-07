@@ -36,7 +36,7 @@ export default {
 			])
 
 		await hub.send({
-			content: `@here`, embeds: [
+			content: `ignore`, embeds: [
 				new MessageEmbed({
 					color: 'RANDOM',
 					author: {
@@ -206,6 +206,26 @@ export default {
 			})
 			data.delete()
 		})
+	},
+
+	/** @param {Client} client */
+	checkModmails: async function (client) {
+		const guild = await client.guilds.fetch({ guild: process.env.GUILD })
+		setInterval(async () => {
+			Modmails.find(async (err, data) => {
+				if (err) throw err
+				if (!data) return
+
+				for (const value of data) {
+					guild.members.fetch(value['memberID']).catch(async () => {
+						value.delete()
+						guild.channels.fetch(value['channelID']).then(ch => {
+							ch.send('Ticket author left the server so please delete this channel manually.')
+						})
+					})
+				}
+			})
+		}, 60000)
 	},
 
 	/** @param {CommandInteraction} interaction */
