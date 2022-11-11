@@ -9,7 +9,7 @@ export default {
 	perms: ['ADMINISTRATOR'],
 
 	data: new SlashCommandBuilder()
-		.setName('role')
+		.setName('birthday')
 		.setDescription('Assign/remove the Birthday role from a member.')
 		.addUserOption(user => user
 			.setName('member')
