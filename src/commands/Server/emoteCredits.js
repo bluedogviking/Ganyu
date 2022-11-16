@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { CommandInteraction, MessageAttachment } from 'discord.js'
+import { CommandInteraction, MessageEmbed } from 'discord.js'
 import EmoteCredits from '../../database/models/emoteCredits.js'
 
 export default {
@@ -10,135 +10,178 @@ export default {
 
 	data: new SlashCommandBuilder()
 		.setName('credits')
-		.setDescription('Manager for emotes in the server.')
-		.addSubcommand(add => add
-			.setName('add')
-			.setDescription('Add an emote to the credits.')
-			.addStringOption(author => author
-				.setName('author')
-				.setDescription('Author of the emote.')
-				.setRequired(true))
-			.addStringOption(emote => emote
-				.setName('emote')
-				.setDescription('The emote in raw format.')
+		.setDescription('Database for the emotes in the server.')
+		.addSubcommand(register => register
+			.setName('register')
+			.setDescription('Register an artist to the database.')
+			.addStringOption(artist => artist
+				.setName('artist')
+				.setDescription('Discord tag of the artist. (Name#tag)')
 				.setRequired(true))
 			.addStringOption(socials => socials
 				.setName('socials')
-				.setDescription('Any social media links of the author.')))
-		.addSubcommand(del => del
-			.setName('delete')
-			.setDescription('Delete an emote from the credits.')
-			.addStringOption(emote => emote
+				.setDescription('Any social media links of the artist.')))
+		.addSubcommand(addEmote => addEmote
+			.setName('add-emote')
+			.setDescription('Add an emote to the artist\'s vault.')
+			.addStringOption(artist => artist
+				.setName('artist')
+				.setDescription('Discord tag of the artist. (Name#tag)')
+				.setRequired(true))
+			.addStringOption(rawEmote => rawEmote
 				.setName('emote')
 				.setDescription('The emote in raw format.')
+				.setRequired(true))
+			.addStringOption(emoteURL => emoteURL
+				.setName('emote-link')
+				.setDescription('Right click on the emote and select copy link')
 				.setRequired(true)))
-		.addSubcommand(view => view
-			.setName('view')
-			.setDescription('Inspect an emote from the database.')
+		.addSubcommand(deleteEmote => deleteEmote
+			.setName('delete-emote')
+			.setDescription('Delet an emote from the artist\'s vault.')
+			.addStringOption(artist => artist
+				.setName('artist')
+				.setDescription('Who\'s emote do you want to delete?')
+				.setRequired(true))
 			.addStringOption(emote => emote
 				.setName('emote')
-				.setDescription('The emote in raw format.')
+				.setDescription('Which emote?')
 				.setRequired(true)))
-		.addSubcommand(list => list
-			.setName('list')
-			.setDescription('List all the emotes in the database.')),
+		.addSubcommand(vault => vault
+			.setName('vault')
+			.setDescription('List the vault of given artist.')
+			.addStringOption(artist => artist
+				.setName('artist')
+				.setDescription('The artist you want to see the vault of')
+				.setRequired(true))),
 
 	/**
 	 * @param {CommandInteraction} interaction
-	 * @param {String} author
-	 * @param {String} emote
+	 * @param {String} artist
 	 * @param {String} socials
 	 * @returns {Promise<void>}
 	 */
-	add: async function (interaction, author, emote, socials) {
-		EmoteCredits.findOne({ emote: emote }, {}, {}, async (err, data) => {
+	register: async function (interaction, artist, socials) {
+		EmoteCredits.findOne({ artist: artist }, {}, {}, async (err, data) => {
 			if (err) throw err
-			if (data)
-				return interaction.reply({ content: `This emote is already in the database.` })
-			await EmoteCredits.create({
-				author,
-				emote,
-				socials,
-			}).then(data => {
-				return interaction.reply({ content: `Added ${data.emote} to the database.` })
-			})
+			if (data) {
+				data.artist = artist
+				data.socials = socials
+				data.emotes = new Map()
+				data.save()
+				await interaction.reply({ content: `**${data['artist']}** has been updated.` })
+			} else {
+				await EmoteCredits.create({
+					artist: artist,
+					socials: socials ? socials : 'N/A',
+					emotes: new Map(),
+				}).then(data => {
+					return interaction.reply({ content: `Registered **${data['artist']}** to the database.` })
+				})
+			}
 		})
 	},
 
 	/**
 	 * @param {CommandInteraction} interaction
+	 * @param {String} artist
 	 * @param {String} emote
+	 * @param {String} emoteURL
 	 * @returns {Promise<void>}
 	 */
-	delete: async function (interaction, emote) {
-		EmoteCredits.findOne({ emote: emote }, {}, {}, (err, data) => {
+	addEmote: async function (interaction, artist, emote, emoteURL) {
+		EmoteCredits.findOne({ artist }, {}, {}, async (err, data) => {
 			if (err) throw err
 			if (!data)
-				return interaction.reply({ content: `This emote was not credited.` })
-			data.delete()
-			return interaction.reply({ content: `Deleted ${emote} from the database.` })
+				return await interaction.reply({ content: `Please register the artist first.` })
+			if (data.emotes.has(emote)) {
+				data.emotes.set(`${emote}`, {
+					emote,
+					emoteURL: emoteURL,
+				})
+				data.save()
+				return await interaction.reply({ content: `${emote} has been updated.` })
+			}
+			data.emotes.set(`${emote}`, {
+				emoteURL: emoteURL,
+			})
+			await interaction.reply({ content: `Added ${emote} to **${artist}**'s vault.` })
+			data.save()
+		})
+	},
+
+	deleteEmote: async function (interaction, artist, emote) {
+		EmoteCredits.findOne({ artist }, {}, {}, async (err, data) => {
+			if (err) throw err
+			if (!data)
+				return await interaction.reply({ content: `**${artist}** is not registered.` })
+			if (!data.emotes.has(`${emote}`))
+				return await interaction.reply({ content: `**${artist}** does not have the given emote in their vault.` })
+			data.emotes.delete(`${emote}`)
+			data.save()
+			return await interaction.reply({ content: `${emote} has been deleted from **${artist}**'s vault.` })
 		})
 	},
 
 	/**
 	 * @param {CommandInteraction} interaction
-	 * @param {String} emote
+	 * @param {String} artist
 	 * @returns {Promise<void>}
 	 */
-	view: async function (interaction, emote) {
-		EmoteCredits.findOne({ emote: emote }, {}, {}, (err, data) => {
+	vault: async function (interaction, artist) {
+		EmoteCredits.findOne({ artist }, {}, {}, async (err, data) => {
 			if (err) throw err
 			if (!data)
-				return interaction.reply({ content: `This emote was not credited.` })
-			return interaction.reply({
-				embeds: [{
-					color: 'RANDOM',
-					description: `**Author**: ${data.author}\n**Socials**: ${data.socials}\n**Emote**: ${data.emote}`,
-				}],
-			})
-		})
-	},
+				return await interaction.reply({ content: `**${artist}** is not registered.` })
 
-	/**
-	 * @param {CommandInteraction} interaction
-	 */
-	list: function (interaction) {
-		EmoteCredits.find((err, data) => {
-			if (err) throw err
-			if (data.length === 0)
-				return interaction.reply({ content: `There are no credits in the database, yet.` })
-			return interaction.reply({
-				files: [
-					new MessageAttachment(Buffer.from(data.map(value => {
-						return `# Emote\n- ${value['emote']}\n`
-					}).sort().join('\n')), 'Emotes.md'),
+			const fields = []
+			for (const [key, value] of data.emotes.entries()) {
+				fields.push({
+					name: `${key}`,
+					value: `Emote URL: ${value.emoteURL}`,
+					inline: true,
+				})
+			}
+
+			await interaction.reply({
+				embeds: [
+					new MessageEmbed({
+						color: 'BLUE',
+						title: `**${artist}**'s Emote Vault`,
+						// description: 'Please clear out redundant warnings as Discord embeds have a limit of 6000 characters, this function may not work in the future with many warnings.',
+						fields,
+						timestamp: new Date(),
+					}),
 				],
+			}).catch(() => {
+				interaction.reply('Please ask Zyla for help.')
 			})
 		})
 	},
 
 	/** @param {CommandInteraction} interaction */
 	execute: async function (interaction) {
-		let cmd = interaction.options.getSubcommand()
+		const cmd = interaction.options.getSubcommand()
+		const artist = interaction.options.getString('artist').trim()
+		const socials = interaction.options.getString('socials')
 
 		switch (cmd) {
-			case 'add':
-				const author = interaction.options.getString('author')
-				const addEmote = interaction.options.getString('emote')
-				const socials = interaction.options.getString('socials') ?? 'N/A'
+			case 'register':
+				await this.register(interaction, artist, socials?.trim())
+				break
+			case 'add-emote':
+				const emote = interaction.options.getString('emote').trim()
+				const emoteURL = interaction.options.getString('emote-link').trim()
 
-				await this.add(interaction, author, addEmote, socials)
+				await this.addEmote(interaction, artist, emote, emoteURL)
 				break
-			case 'delete':
-				const delEmote = interaction.options.getString('emote')
-				await this.delete(interaction, delEmote)
+			case 'delete-emote':
+				const emote2 = interaction.options.getString('emote').trim()
+
+				await this.deleteEmote(interaction, artist, emote2)
 				break
-			case 'view':
-				const viewEmote = interaction.options.getString('emote')
-				await this.view(interaction, viewEmote)
-				break
-			case 'list':
-				this.list(interaction)
+			case 'vault':
+				await this.vault(interaction, artist)
 				break
 		}
 	},

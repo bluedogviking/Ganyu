@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
 
 const EmoteCreditsSchema = new mongoose.Schema({
-	author: String,
-	emote: String,
+	artist: String,
 	socials: String,
+	emotes: Map,
 })
 
 export default mongoose.model('emoteCredits', EmoteCreditsSchema)
