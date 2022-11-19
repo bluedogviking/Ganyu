@@ -21,6 +21,13 @@ export default {
 			.addStringOption(socials => socials
 				.setName('socials')
 				.setDescription('Any social media links of the artist.')))
+		.addSubcommand(deleteArtist => deleteArtist
+			.setName('delete-artist')
+			.setDescription('Delet an artist from the database.')
+			.addStringOption(artist => artist
+				.setName('artist')
+				.setDescription('The artist you want to delete.')
+				.setRequired(true)))
 		.addSubcommand(addEmote => addEmote
 			.setName('add-emote')
 			.setDescription('Add an emote to the artist\'s vault.')
@@ -53,7 +60,10 @@ export default {
 			.addStringOption(artist => artist
 				.setName('artist')
 				.setDescription('The artist you want to see the vault of')
-				.setRequired(true))),
+				.setRequired(true)))
+		.addSubcommand(listArtists => listArtists
+			.setName('list-artists')
+			.setDescription('List of all credited artists.')),
 
 	/**
 	 * @param {CommandInteraction} interaction
@@ -79,6 +89,21 @@ export default {
 					return interaction.reply({ content: `Registered **${data['artist']}** to the database.` })
 				})
 			}
+		})
+	},
+
+	/**
+	 * @param {CommandInteraction} interaction
+	 * @param {String} artist
+	 * @returns {Promise<void>}
+	 */
+	deletArtist: async function (interaction, artist) {
+		EmoteCredits.findOne({ artist: artist }, {}, {}, async (err, data) => {
+			if (err) throw err
+			if (!data)
+				return await interaction.reply({ content: `Couldn't find the **${artist}** in the database.` })
+			data.delete()
+			await interaction.reply({ content: `**${artist}** has been deleted from the database.` })
 		})
 	},
 
@@ -159,11 +184,44 @@ export default {
 		})
 	},
 
+	/**
+	 * @param {CommandInteraction} interaction
+	 * @returns {Promise<void>}
+	 */
+	listArtists: async function (interaction) {
+		EmoteCredits.find(async (err, data) => {
+			if (err) throw err
+			if (!data)
+				return await interaction.reply({ content: `There are no artists in the vault.` })
+
+			const fields = []
+			for (const [key, value] of data.entries()) {
+				fields.push({
+					name: `${value.artist}`,
+					value: `${value.socials}`,
+				})
+			}
+
+			await interaction.reply({
+				embeds: [
+					new MessageEmbed({
+						color: 'BLUE',
+						title: 'Here\'s the list of all credited artists.',
+						fields,
+						timestamp: new Date(),
+					}),
+				],
+			}).catch(() => {
+				interaction.reply('Please ask Zyla for help.')
+			})
+		})
+	},
+
 	/** @param {CommandInteraction} interaction */
 	execute: async function (interaction) {
 		const cmd = interaction.options.getSubcommand()
-		const artist = interaction.options.getString('artist').trim()
-		const socials = interaction.options.getString('socials')
+		const artist = interaction.options.getString('artist')?.trim()
+		const socials = interaction.options.getString('socials')?.trim()
 
 		switch (cmd) {
 			case 'register':
@@ -182,6 +240,12 @@ export default {
 				break
 			case 'vault':
 				await this.vault(interaction, artist)
+				break
+			case 'list-artists':
+				await this.listArtists(interaction)
+				break
+			case 'delete-artist':
+				await this.deletArtist(interaction, artist)
 				break
 		}
 	},

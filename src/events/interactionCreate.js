@@ -19,6 +19,7 @@ export default {
 				await command.execute(interaction)
 			}
 		} catch (err) {
+			await interaction.reply({ content: `Please contact Zyla.\n${err.stack}` })
 			console.log(err)
 		}
 	},
