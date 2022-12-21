@@ -223,9 +223,12 @@ export default {
 							ch.send('Ticket author left the server so please delete this channel manually.')
 						})
 					})
+					guild.channels.fetch(value['channelID']).catch(async () => {
+						value.delete()
+					})
 				}
 			})
-		}, 60000)
+		}, 10000)
 	},
 
 	/** @param {CommandInteraction} interaction */
