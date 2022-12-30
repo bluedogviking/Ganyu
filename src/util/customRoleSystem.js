@@ -102,18 +102,19 @@ export default {
 
 	/** @param {CommandInteraction} interaction */
 	delet: async function (interaction) {
+		await interaction.deferReply()
 		if (!interaction.member.roles.cache.some(r => [
 			Roles.admin,
 			Roles.mod,
 		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
-		
+
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
 			.catch(() => {
 				interaction.reply({ content: `Couldn't find the member.` })
 			})
 
-		if (!member) return await interaction.reply({ content: `Could not find the member.` })
+		if (!member) return interaction.reply({ content: `Could not find the member.` })
 
 		CustomRoles.findOne({ memberID: member.id }, {}, {}, async (err, data) => {
 			if (err) throw err
@@ -123,9 +124,7 @@ export default {
 			await interaction.guild.roles.delete(role).then(async () => {
 				data.delete()
 				await member.send(`Your custom role has been deleted by ${interaction.member.user.tag}.`)
-				return interaction.reply(`${member.user.tag ?? member}'s custom role has been deleted.`)
-			}).catch((e) => {
-				interaction.reply(`There was an error while deleting the role.\nError: ${e.message}`)
+				return await interaction.followUp(`${member.user.tag ?? member}'s custom role has been deleted.`)
 			})
 		})
 	},
