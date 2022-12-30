@@ -102,16 +102,16 @@ export default {
 
 	/** @param {CommandInteraction} interaction */
 	delet: async function (interaction) {
+		if (!interaction.member.roles.cache.some(r => [
+			Roles.admin,
+			Roles.mod,
+		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
+		
 		const user = interaction.options.getUser('member').id
 		const member = await interaction.guild.members.fetch({ user })
 			.catch(() => {
 				interaction.reply({ content: `Couldn't find the member.` })
 			})
-
-		if (!interaction.member.roles.cache.some(r => [
-			Roles.admin,
-			Roles.mod,
-		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
 
 		if (!member) return await interaction.reply({ content: `Could not find the member.` })
 
