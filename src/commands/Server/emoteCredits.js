@@ -1,12 +1,11 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 import EmoteCredits from '../../database/models/emoteCredits.js'
+import Roles from '../../constants/roles.js'
 
 export default {
 	directory: 'Server',
 	usage: `Go Figure`,
-	requirements: 'Administration',
-	perms: 1n << 3n,
 
 	data: new SlashCommandBuilder()
 		.setName('credits')
@@ -219,6 +218,11 @@ export default {
 
 	/** @param {CommandInteraction} interaction */
 	execute: async function (interaction) {
+		if (!interaction.member.roles.cache.some(r => [
+			Roles.admin,
+			Roles.mod,
+		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
+
 		const cmd = interaction.options.getSubcommand()
 		const artist = interaction.options.getString('artist')?.trim()
 		const socials = interaction.options.getString('socials')?.trim()

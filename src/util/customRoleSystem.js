@@ -108,8 +108,10 @@ export default {
 				interaction.reply({ content: `Couldn't find the member.` })
 			})
 
-		if (!interaction.member.roles.cache.has(Roles.admin))
-			return await interaction.reply(`Only Admins can delete one's custom role.`)
+		if (!interaction.member.roles.cache.some(r => [
+			Roles.admin,
+			Roles.mod,
+		].includes(r.id))) return interaction.reply(`Insufficient permissions.`)
 
 		if (!member) return await interaction.reply({ content: `Could not find the member.` })
 
