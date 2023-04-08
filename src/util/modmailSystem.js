@@ -36,7 +36,7 @@ export default {
 			])
 
 		await hub.send({
-			content: `here`, embeds: [
+			content: `@here`, embeds: [
 				new MessageEmbed({
 					color: 'RANDOM',
 					author: {
