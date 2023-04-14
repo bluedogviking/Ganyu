@@ -1,6 +1,7 @@
 import { Client, Collection } from 'discord.js'
 import { config } from 'dotenv'
 import loader from './util/loader.js'
+import mongoose from 'mongoose'
 
 config()
 
@@ -13,5 +14,6 @@ Ganyu.commands = new Collection()
 
 await loader.loadCommands()
 await loader.loadEvents()
-
+mongoose.set('strictQuery', true,
+)
 await Ganyu.login()

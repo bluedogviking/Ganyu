@@ -7,7 +7,6 @@ export default {
 			Mongoose.connect(url, () => {
 				zaq.ok('Connected to the database.')
 			})
-			Mongoose.set('strictQuery', true)
 		} catch (error) {
 			zaq.err(`There was an error connecting to the database.\n${error}`)
 		}
