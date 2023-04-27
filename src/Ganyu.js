@@ -14,6 +14,5 @@ Ganyu.commands = new Collection()
 
 await loader.loadCommands()
 await loader.loadEvents()
-mongoose.set('strictQuery', true,
-)
+mongoose.set('strictQuery', false)
 await Ganyu.login()
